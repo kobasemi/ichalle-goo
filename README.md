@@ -1,6 +1,7 @@
 # ichalle-goo
 
 # メンバー
-[YOSHITAKA]://github.com/eukeka
+[YOSHITAKA](http://github.com/eukeka)  
+[KOSUKE](http://github.com/ommadawn46)
 
 
