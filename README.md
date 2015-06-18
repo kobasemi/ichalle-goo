@@ -2,6 +2,6 @@
 
 # メンバー
 [YOSHITAKA](http://github.com/eukeka)  
-[KOSUKE](http://github.com/ommadawn46)
-[BANDO](https://github.com/b11001010)
+[KOSUKE](http://github.com/ommadawn46)  
+[BANDO](https://github.com/b11001010)  
 
