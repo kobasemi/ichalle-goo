@@ -1,21 +1,12 @@
 package jp.ac.kansai_u.kutc.firefly.waltzforai;
 
-import processing.core.PApplet;
-
-public class World extends PApplet{
-	private static final long serialVersionUID = 4638417483316204510L;
+public class World extends Thread{
+	private final int energy; // ワールド全体のエネルギー総量
+	private float worldWidth, worldHeight; // ワールドの大きさ
 	
-	public static void main(String args[]){
-		PApplet.main(new String[] { "--present", "jp.ac.kansai_u.kutc.firefly.waltzforai.World" });
-	}
-	
-	@Override
-	public void setup(){
-		size(displayWidth, displayHeight);
-	}
-	
-	@Override
-	public void draw(){
-		
+	public World(int width, int height){
+		energy = 100000;
+		worldWidth = width;
+		worldHeight = height;
 	}
 }
