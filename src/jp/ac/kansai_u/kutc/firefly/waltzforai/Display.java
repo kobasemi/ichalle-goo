@@ -3,6 +3,7 @@ package jp.ac.kansai_u.kutc.firefly.waltzforai;
 import processing.core.PApplet;
 import processing.core.PVector;
 
+// 描画クラス
 public class Display extends PApplet{
 	private static final long serialVersionUID = 4638417483316204510L;
 	
