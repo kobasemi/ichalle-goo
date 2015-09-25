@@ -1,7 +1,8 @@
 package jp.ac.kansai_u.kutc.firefly.waltzforai.splitmap;
 
 public class Space {
-	private TreeObject latestObj;	// 最新のオブジェクト
+	private TreeObject entityHead;	// エンティティ実体の最新のオブジェクト
+	private TreeObject sightHead;	// エンティティ視界の最新のオブジェクト
 	
 	public boolean push(TreeObject obj){
 		if(obj == null){
@@ -11,13 +12,20 @@ public class Space {
 			return false;	// 二重登録防止
 		}
 		
-		// 最新のオブジェクトの更新
-		if(latestObj == null){
-			latestObj = obj;
+		TreeObject head;
+		if(obj.isSubstance()){
+			head = entityHead;
 		}else{
-			obj.setNextObject(latestObj);
-			latestObj.setPrevObject(obj);
-			latestObj = obj;
+			head = sightHead;
+		}
+		
+		// 最新のオブジェクトの更新
+		if(head == null){
+			head = obj;
+		}else{
+			obj.setNext(head);
+			head.setPrev(obj);
+			head = obj;
 		}
 		
 		obj.setSpace(this);
@@ -26,11 +34,22 @@ public class Space {
 	
 	// 削除されるオブジェクトのチェック
 	public boolean onRemove(TreeObject obj){
-		if(latestObj.equals(obj)){
-			if(latestObj != null){
-				latestObj = latestObj.getNectObject();
+		TreeObject head;
+		if(obj.isSubstance()){
+			head = entityHead;
+		}else{
+			head = sightHead;
+		}
+		
+		if(head.equals(obj)){
+			if(head != null){
+				head = head.getNext();
 			}
 		}
 		return true;
 	}
+	
+	// ゲッタ
+	public TreeObject getEntityHead(){ return entityHead; }
+	public TreeObject getSightHead(){ return sightHead; }
 }
