@@ -8,24 +8,27 @@ public class Space {
 		if(obj == null){
 			return false;	// nullチェック
 		}
-		if(obj.getSpace().equals(this)){
+		if(this.equals(obj.getSpace())){
 			return false;	// 二重登録防止
 		}
 		
-		TreeObject head;
-		if(obj.isSubstance()){
-			head = entityHead;
-		}else{
-			head = sightHead;
-		}
-		
 		// 最新のオブジェクトの更新
-		if(head == null){
-			head = obj;
+		if(obj.isSubstance()){
+			if(entityHead == null){
+				entityHead = obj;
+			}else{
+				obj.setNext(entityHead);
+				entityHead.setPrev(obj);
+				entityHead = obj;
+			}
 		}else{
-			obj.setNext(head);
-			head.setPrev(obj);
-			head = obj;
+			if(sightHead == null){
+				sightHead = obj;
+			}else{
+				obj.setNext(sightHead);
+				sightHead.setPrev(obj);
+				sightHead = obj;
+			}
 		}
 		
 		obj.setSpace(this);
@@ -34,18 +37,16 @@ public class Space {
 	
 	// 削除されるオブジェクトのチェック
 	public boolean onRemove(TreeObject obj){
-		TreeObject head;
 		if(obj.isSubstance()){
-			head = entityHead;
+			if(entityHead != null && entityHead.equals(obj)){
+				entityHead = entityHead.getNext();
+			}
 		}else{
-			head = sightHead;
-		}
-		
-		if(head.equals(obj)){
-			if(head != null){
-				head = head.getNext();
+			if(sightHead != null && sightHead.equals(obj)){
+				sightHead = sightHead.getNext();
 			}
 		}
+		
 		return true;
 	}
 	

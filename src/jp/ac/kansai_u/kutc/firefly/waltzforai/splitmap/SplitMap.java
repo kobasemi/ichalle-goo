@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jp.ac.kansai_u.kutc.firefly.waltzforai.World;
+import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Animal;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Entity;
 
 // 4分木分割空間の管理クラス
@@ -17,8 +18,8 @@ public class SplitMap {
 	
 	public SplitMap(World world, int splitLevel){
 		this.world = world;
-		width = world.getWidth();
-		height = world.getHeight();
+		width = this.world.getWidth();
+		height = this.world.getHeight();
 		this.splitLevel = splitLevel;
 		sWidth = (float)width / (1<<splitLevel);
 		sHeight = (float)height / (1<<splitLevel);
@@ -29,13 +30,13 @@ public class SplitMap {
 		for(int i = 1; i < splitLevel+2; i++){
 			spaceNumTmp[i] = spaceNumTmp[i-1] * 4;
 		}
-		spaceNum = new int[splitLevel+1];
-		for(int i = 0; i < splitLevel+1; i++){
-			spaceNum[i] = (spaceNumTmp[i+1]-1)/3;
+		spaceNum = new int[splitLevel+2];
+		for(int i = 0; i < splitLevel+2; i++){
+			spaceNum[i] = (spaceNumTmp[i]-1)/3;
 		}
 		
 		// 空間ツリー配列の作成
-		spaceTree = new Space[spaceNum[splitLevel]];
+		spaceTree = new Space[spaceNum[splitLevel+1]];
 	}
 	
 	// 衝突判定は動くEntity(Animalサブクラス)の中で行う
@@ -72,7 +73,7 @@ public class SplitMap {
 		int nextElem;
 		for(int i = 0; i < 4; i++){
 			nextElem = elem*4+1+i;
-			if(nextElem < spaceNum[splitLevel] && spaceTree[nextElem] != null){
+			if(nextElem < spaceNum[splitLevel+1] && spaceTree[nextElem] != null){
 				if(!existChild){
 					// 登録オブジェクトをスタックに追加
 					TreeObject oObj = spaceTree[elem].getEntityHead();
@@ -90,7 +91,7 @@ public class SplitMap {
 		// スタックからオブジェクトを外す
 		if(existChild){
 			for(int i = 0; i < objNum; i++){
-				stack.remove(stack.size()-1-i);
+				stack.remove(stack.size()-1);
 			}
 		}
 		
@@ -100,7 +101,13 @@ public class SplitMap {
 	// ツリーオブジェクトの登録
 	public boolean regist(TreeObject obj){
 		Entity e = obj.getEntity();
-		float size = e.getSize();
+		float size;
+		if(obj.isSubstance()){
+			size = e.getSize();
+		}else{
+			size = ((Animal)e).getSight();
+		}
+		
 		int elem = getTreeNumber(e.getX()-size, e.getY()-size, e.getX()+size, e.getY()+size);
 		if(elem > -1){
 			if(spaceTree[elem] == null){
@@ -118,17 +125,16 @@ public class SplitMap {
 			spaceTree[elem] = new Space();
 			// 親空間にジャンプ
 			elem = (elem-1)>>2;
+			if(elem < 0) break;
 		}
 		return true;
 	}
 	
 	// 座標から所属する空間の要素番号を割り出す
-	private int getTreeNumber(float left, float top, float right, float bottom){
+	public int getTreeNumber(float left, float top, float right, float bottom){
 		// 左上と右下の空間番号を算出
 		long lt = getMortonNumber(left, top);
-		System.out.println(lt);
 		long rb = getMortonNumber(right, bottom);
-		System.out.println(rb);
 		
 		// 所属レベルを算出
 		long def = lt ^ rb;
@@ -142,10 +148,10 @@ public class SplitMap {
 		
 		// ツリーの要素番号を算出
 		int treeNum = (int)(rb >> (hiLevel*2));
-		int addNum = spaceNum[splitLevel-(hiLevel+1)];
+		int addNum = spaceNum[splitLevel-hiLevel];
 		treeNum += addNum;
 		
-		if(treeNum > spaceNum[splitLevel]){
+		if(treeNum > spaceNum[splitLevel+1]){
 			return -1;
 		}
 		

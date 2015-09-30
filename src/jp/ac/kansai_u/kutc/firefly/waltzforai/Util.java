@@ -14,9 +14,11 @@ public class Util {
 		return Math.sqrt(xDist*xDist + yDist*yDist);
 	}
 	
-	// エンティティ同士の衝突判定
+	// 2つのエンティティが衝突しているか
 	public static boolean isCollided(Entity e1, Entity e2){
-		// TODO: 未実装
+		if(getDistance(e1.getX(), e1.getY(), e2.getX(), e2.getY()) < e1.getSize() + e2.getSize()){
+			return true;
+		}
 		return false;
 	}
 	

@@ -1,6 +1,7 @@
 package jp.ac.kansai_u.kutc.firefly.waltzforai.splitmap;
 
 import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Entity;
+import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Animal;
 
 public class TreeObject {
 	private Entity entity;			// 対象のエンティティ
@@ -12,6 +13,11 @@ public class TreeObject {
 	public TreeObject(Entity entity, boolean isSubstance){
 		this.entity = entity;
 		this.isSubstance = isSubstance;
+		if(this.isSubstance){
+			this.entity.setTreeObject(this);
+		}else{
+			((Animal)this.entity).setSightTreeObject(this);
+		}
 	}
 	
 	// 空間から離脱する
