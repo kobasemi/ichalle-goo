@@ -27,7 +27,7 @@ public class MainFrame extends JFrame{
 	    w = screenSize.width;
 	    h = screenSize.height;
 
-		// 初期画面で写すパネルをセットする．
+		// 初期画面で写すパネルをセットする．．
 		this.add(fp);
 		fp.setVisible(true);
 		this.add(mp);
