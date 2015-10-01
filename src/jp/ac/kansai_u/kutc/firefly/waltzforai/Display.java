@@ -24,7 +24,7 @@ public class Display extends PApplet{
 	public void setup(){
 		size(displayWidth, displayHeight);
 		
-		world = new World(this, displayWidth, displayHeight);
+		world = new World(this, 1000, 700);
 		world.start();
 		
 		basePos = new PVector();

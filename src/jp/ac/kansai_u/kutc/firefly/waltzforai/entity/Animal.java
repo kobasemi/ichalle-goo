@@ -5,7 +5,7 @@ import jp.ac.kansai_u.kutc.firefly.waltzforai.Util;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.World;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.splitmap.SplitMap;
 
-public class Animal extends Entity {
+public abstract class Animal extends Entity {
 	double direction;				// 進行方向 (ラジアン)
 	double speed;					// 移動速度 (TODO こういう能力値は後々遺伝子で設定できるようにする)
 	double fov;						// 視野角 (ラジアン)
@@ -15,7 +15,7 @@ public class Animal extends Entity {
 		
 		this.sight = size * 2;		// TODO 要変更
 		this.direction = Math.random() * Math.PI * 2;	// TODO 要変更
-		this.speed = 2.0;			// TODO 要変更
+		this.speed = 1;			// TODO 要変更
 	}
 
 	@Override
