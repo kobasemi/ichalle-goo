@@ -3,6 +3,7 @@ package jp.ac.kansai_u.kutc.firefly.waltzforai;
 import java.util.List;
 
 import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Entity;
+import jp.ac.kansai_u.kutc.firefly.waltzforal.frame.MainFrame;
 import processing.core.PApplet;
 import processing.core.PVector;
 import processing.event.MouseEvent;
@@ -10,26 +11,29 @@ import processing.event.MouseEvent;
 // 描画クラス
 public class Display extends PApplet{
 	private static final long serialVersionUID = 4638417483316204510L;
-	
+	private MainFrame mainFrame;
 	private World world;			// 描画スレッド
 	private List<Entity> entities;
-	
+
 	private PVector basePos; 		// 現在の描画範囲
-	
-	public static void main(String args[]){
+
+	/*public static void main(String args[]){
 		PApplet.main(new String[] { "--present", "jp.ac.kansai_u.kutc.firefly.waltzforai.Display" });
-	}
-	
-	@Override
-	public void setup(){
-		size(displayWidth, displayHeight);
-		
+	}*/
+
+	public Display(MainFrame mf){
+		mainFrame = mf;
 		world = new World(this, 1000, 700);
 		world.start();
-		
+
 		basePos = new PVector();
 	}
-	
+
+	@Override
+	public void setup(){
+		size(mainFrame.getW(), mainFrame.getH());
+	}
+
 	@Override
 	public void draw(){
 		background(255);
@@ -38,10 +42,10 @@ public class Display extends PApplet{
 			e.draw(this);
 		}
 	}
-	
+
 	// TODO: 基本はマウスのみの操作（拡大・ゲームスピード変更・一時停止）
 	// TODO: キーボードによるショートカット操作
-	
+
 	// セッタ
 	public void setEntityList(List<Entity> entities){ this.entities = entities; }
 }
