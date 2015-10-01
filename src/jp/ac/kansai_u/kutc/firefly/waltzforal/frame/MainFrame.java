@@ -1,8 +1,6 @@
 package jp.ac.kansai_u.kutc.firefly.waltzforal.frame;
-import java.awt.Color;
+
 import java.awt.Dimension;
-import java.awt.GraphicsEnvironment;
-import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,30 +12,22 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
 public class MainFrame extends JFrame{
+	private static final long serialVersionUID = 8560089064861399672L;
+	
 	public static String[] PanelNames = {"fp","mp","statistic","setting"};
-	MoniterPanel mp = new MoniterPanel(this, PanelNames[1]);
-	FirstPanel fp = new FirstPanel(this,PanelNames[0]);
-    // フレームサイズ
-	private int w;
-	private int h;
+	private MoniterPanel mp;
+	private FirstPanel fp;
 
 	public MainFrame(){
 		// 使用しているモニタのサイズに合わせてパネルサイズを求めます
 	    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-	    w = screenSize.width;
-	    h = screenSize.height;
-
-		// 初期画面で写すパネルをセットする．．
-		this.add(fp);
-		fp.setVisible(true);
-		this.add(mp);
-		mp.setVisible(false);
+	    this.setSize(screenSize.width, screenSize.height);
+	    
 		// 画面の解像度からサイズを求める
 		/*GraphicsEnvironment env = GraphicsEnvironment
 				.getLocalGraphicsEnvironment();
 		Rectangle rect = env.getMaximumWindowBounds();
 		setBounds(rect);*/
-		this.setSize(w,h);
 
 		// メニューの実装
 		JMenuBar menubar = new JMenuBar();
@@ -61,12 +51,15 @@ public class MainFrame extends JFrame{
 		menu1.add(menuitem2);
 		menu1.add(menuitem3);
 		this.setJMenuBar(menubar);
-
-	}
-	public static void main(String[] args){
-		MainFrame mf = new MainFrame();
-		mf.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		mf.setVisible(true);
+		
+		mp = new MoniterPanel(this, PanelNames[1]);
+	    fp = new FirstPanel(this);
+	    
+		// 初期画面で写すパネルをセットする．．
+		this.add(fp);
+		fp.setVisible(true);
+		this.add(mp);
+		mp.setVisible(false);
 	}
 
 	// 自身を消して次を呼ぶ
@@ -84,13 +77,4 @@ public class MainFrame extends JFrame{
 		if (str == PanelNames[1])
 			mp.setVisible(true);
 	}
-
-	public int getW() {
-		return w;
-	}
-
-	public int getH() {
-		return h;
-	}
-
 }

@@ -6,7 +6,6 @@ import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Entity;
 import jp.ac.kansai_u.kutc.firefly.waltzforal.frame.MainFrame;
 import processing.core.PApplet;
 import processing.core.PVector;
-import processing.event.MouseEvent;
 
 // 描画クラス
 public class Display extends PApplet{
@@ -21,8 +20,8 @@ public class Display extends PApplet{
 		PApplet.main(new String[] { "--present", "jp.ac.kansai_u.kutc.firefly.waltzforai.Display" });
 	}*/
 
-	public Display(MainFrame mf){
-		mainFrame = mf;
+	public Display(MainFrame mainFrame){
+		this.mainFrame = mainFrame;
 		world = new World(this, 1000, 700);
 		world.start();
 
@@ -31,7 +30,7 @@ public class Display extends PApplet{
 
 	@Override
 	public void setup(){
-		size(mainFrame.getW(), mainFrame.getH());
+		size(mainFrame.getWidth(), mainFrame.getHeight());
 	}
 
 	@Override
