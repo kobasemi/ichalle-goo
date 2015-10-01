@@ -1,8 +1,8 @@
 package jp.ac.kansai_u.kutc.firefly.waltzforai.splitmap;
 
 public class Space {
-	private TreeObject entityHead;	// エンティティ実体の最新のオブジェクト
-	private TreeObject sightHead;	// エンティティ視界の最新のオブジェクト
+	private TreeBody bodyHead;	// エンティティ実体の最新のオブジェクト
+	private TreeSight sightHead;	// エンティティ視界の最新のオブジェクト
 	
 	public boolean push(TreeObject obj){
 		if(obj == null){
@@ -13,21 +13,21 @@ public class Space {
 		}
 		
 		// 最新のオブジェクトの更新
-		if(obj.isSubstance()){
-			if(entityHead == null){
-				entityHead = obj;
+		if(obj instanceof TreeBody){
+			if(bodyHead == null){
+				bodyHead = (TreeBody) obj;
 			}else{
-				obj.setNext(entityHead);
-				entityHead.setPrev(obj);
-				entityHead = obj;
+				obj.setNext(bodyHead);
+				bodyHead.setPrev(obj);
+				bodyHead = (TreeBody) obj;
 			}
 		}else{
 			if(sightHead == null){
-				sightHead = obj;
+				sightHead = (TreeSight) obj;
 			}else{
 				obj.setNext(sightHead);
 				sightHead.setPrev(obj);
-				sightHead = obj;
+				sightHead = (TreeSight) obj;
 			}
 		}
 		
@@ -37,13 +37,13 @@ public class Space {
 	
 	// 削除されるオブジェクトのチェック
 	public boolean onRemove(TreeObject obj){
-		if(obj.isSubstance()){
-			if(entityHead != null && entityHead.equals(obj)){
-				entityHead = entityHead.getNext();
+		if(obj instanceof TreeBody){
+			if(bodyHead != null && bodyHead.equals(obj)){
+				bodyHead = (TreeBody) bodyHead.getNext();
 			}
 		}else{
 			if(sightHead != null && sightHead.equals(obj)){
-				sightHead = sightHead.getNext();
+				sightHead = (TreeSight) sightHead.getNext();
 			}
 		}
 		
@@ -51,6 +51,6 @@ public class Space {
 	}
 	
 	// ゲッタ
-	public TreeObject getEntityHead(){ return entityHead; }
+	public TreeObject getEntityHead(){ return bodyHead; }
 	public TreeObject getSightHead(){ return sightHead; }
 }

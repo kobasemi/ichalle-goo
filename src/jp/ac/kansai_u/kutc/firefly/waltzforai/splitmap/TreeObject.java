@@ -1,23 +1,15 @@
 package jp.ac.kansai_u.kutc.firefly.waltzforai.splitmap;
 
 import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Entity;
-import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Animal;
 
-public class TreeObject {
-	private Entity entity;			// 対象のエンティティ
-	private Space space;			// 登録空間
-	private TreeObject prev;		// 前のオブジェクト
-	private TreeObject next;		// 次のオブジェクト
-	private boolean isSubstance;	// 実体か？
+public abstract class TreeObject {
+	protected Entity entity;		// 対象のエンティティ
+	protected Space space;			// 登録空間
+	protected TreeObject prev;		// 前のオブジェクト
+	protected TreeObject next;		// 次のオブジェクト
 	
-	public TreeObject(Entity entity, boolean isSubstance){
+	public TreeObject(Entity entity){
 		this.entity = entity;
-		this.isSubstance = isSubstance;
-		if(this.isSubstance){
-			this.entity.setTreeObject(this);
-		}else{
-			((Animal)this.entity).setSightTreeObject(this);
-		}
 	}
 	
 	// 空間から離脱する
@@ -43,6 +35,9 @@ public class TreeObject {
 		return true;
 	}
 	
+	// オブジェクトの大きさを返す
+	public abstract float getObjectSize();
+	
 	// セッタ
 	public void setSpace(Space space){ this.space = space; }
 	public void setPrev(TreeObject obj){ prev = obj; }
@@ -52,5 +47,4 @@ public class TreeObject {
 	public Space getSpace(){ return space; }
 	public Entity getEntity(){ return entity; }
 	public TreeObject getNext(){ return next; }
-	public boolean isSubstance(){ return isSubstance; }
 }

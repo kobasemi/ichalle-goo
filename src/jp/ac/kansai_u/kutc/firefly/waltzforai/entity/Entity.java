@@ -5,13 +5,17 @@ import java.util.List;
 
 import jp.ac.kansai_u.kutc.firefly.waltzforai.Display;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.World;
-import jp.ac.kansai_u.kutc.firefly.waltzforai.splitmap.TreeObject;
+import jp.ac.kansai_u.kutc.firefly.waltzforai.splitmap.TreeBody;
+import jp.ac.kansai_u.kutc.firefly.waltzforai.splitmap.TreeSight;
 
+// 動物・植物などのフィールド上の全てのオブジェクトの元となるクラス
 public abstract class Entity {
 	protected World world;					// 所属ワールド
-	protected TreeObject obj;				// 所属ツリーオブジェクト
+	protected TreeBody treeBody;			// 所属ツリーオブジェクト
+	protected TreeSight treeSight;			// 視野の所属ツリーオブジェクト
 	protected float x, y;					// 現在の座標
 	protected float size;					// エンティティの大きさ(半径)
+	protected float sight;					// 視野の半径
 	protected float r, g, b;				// 色
 	protected int energy;					// エネルギー
 	protected List<Entity> nearEntities;	// 近接エンティティリスト
@@ -21,6 +25,7 @@ public abstract class Entity {
 		this.x = x;
 		this.y = y;
 		this.size = size;
+		this.sight = size;
 		this.energy = energy;
 		this.nearEntities = new ArrayList<Entity>();
 	}
@@ -34,19 +39,23 @@ public abstract class Entity {
 	// ツリーオブジェクトを再登録する
 	protected abstract void reregist();
 	
+	// 近接エンティティリストへの追加
 	public void addNearEntity(Entity entity){
 		nearEntities.add(entity);
 	}
 	
+	// 近接エンティティリストのクリア
 	protected void clearNearEntity(){
 		nearEntities.clear();
 	}
 	
 	// セッタ
-	public void setTreeObject(TreeObject obj){ this.obj = obj; }
+	public void setTreeBody(TreeBody obj){ this.treeBody = obj; }
+	public void setTreeSight(TreeSight obj){ this.treeSight = obj; }
 	
 	// ゲッタ
 	public float getX(){ return x; }
 	public float getY(){ return y; }
 	public float getSize(){ return size; }
+	public float getSight(){ return sight; }
 }

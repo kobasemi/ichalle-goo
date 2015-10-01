@@ -1,5 +1,6 @@
 package jp.ac.kansai_u.kutc.firefly.waltzforai;
 
+import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Animal;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Entity;
 
 // ユーティリティークラス
@@ -23,7 +24,9 @@ public class Util {
 	}
 	
 	// 他エンティティが視界内にいるか (se:主体  oe:客体)
-	public static boolean inSight(Entity se, Entity oe){
+	// seの視野は視界半径と視野角から求められる扇型
+	// それとoe本体との衝突判定（衝突していればtrue）
+	public static boolean inSight(Animal se, Entity oe){
 		// TODO: 未実装
 		return false;
 	}

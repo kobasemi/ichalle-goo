@@ -7,7 +7,8 @@ import java.util.List;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Animal;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Entity;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.splitmap.SplitMap;
-import jp.ac.kansai_u.kutc.firefly.waltzforai.splitmap.TreeObject;
+import jp.ac.kansai_u.kutc.firefly.waltzforai.splitmap.TreeBody;
+import jp.ac.kansai_u.kutc.firefly.waltzforai.splitmap.TreeSight;
 
 // 計算クラス
 public class World extends Thread{
@@ -29,10 +30,10 @@ public class World extends Thread{
 		
 		this.width = width;
 		this.height = height;
-		splitMap = new SplitMap(this, 1);
+		splitMap = new SplitMap(this, 5);
 		
 		entities = new ArrayList<Entity>();
-		energy = 10001;
+		energy = 100001;
 		randomCreateEntity(energy);
 		display.setEntityList(new ArrayList<Entity>(entities));
 		
@@ -48,10 +49,10 @@ public class World extends Thread{
 	private void randomCreateEntity(int energy){
 		int spend = 1000;
 		while((energy -= spend) > 0){
-			Animal animal = new Animal(this, (float)Math.random()*(width-100)+50, (float)Math.random()*(width-100)+50, (float)Math.random()*50, spend);
+			Animal animal = new Animal(this, (float)Math.random()*(width-100)+50, (float)Math.random()*(width-100)+50, (float)Math.random()*30+5, spend);
 			entities.add(animal);
-			splitMap.regist(new TreeObject(animal, true));
-			splitMap.regist(new TreeObject(animal, false));
+			splitMap.regist(new TreeBody(animal));
+			splitMap.regist(new TreeSight(animal));
 		}
 	}
 	
@@ -63,7 +64,7 @@ public class World extends Thread{
 		display.setEntityList(updateList);
 		
 		// 当たりそうなエンティティの検出
-		splitMap.collisionCheck();
+		splitMap.allCheckNearEntity();
 		
 		// 全てのエンティティを更新
 		for(int i = 0; i < updateList.size(); i++){

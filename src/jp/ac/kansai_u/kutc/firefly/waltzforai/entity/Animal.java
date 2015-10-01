@@ -4,57 +4,84 @@ import jp.ac.kansai_u.kutc.firefly.waltzforai.Display;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.Util;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.World;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.splitmap.SplitMap;
-import jp.ac.kansai_u.kutc.firefly.waltzforai.splitmap.TreeObject;
 
 public class Animal extends Entity {
-	protected TreeObject sightObj;	// 視野の所属ツリーオブジェクト
-	float sight;					// 視野の半径
 	double direction;				// 進行方向 (ラジアン)
-	double fov;						// 視野角
+	double speed;					// 移動速度 (TODO こういう能力値は後々遺伝子で設定できるようにする)
+	double fov;						// 視野角 (ラジアン)
 	
 	public Animal(World world, float x, float y, float size, int energy) {
 		super(world, x, y, size, energy);
 		
-		this.sight = size * 2;	// TODO 要変更
+		this.sight = size * 2;		// TODO 要変更
 		this.direction = Math.random() * Math.PI * 2;	// TODO 要変更
+		this.speed = 2.0;			// TODO 要変更
 	}
 
 	@Override
 	public void update() {
-		r = g = b = 0;
+		collisionCheck();	// 衝突判定
+		move();				// 移動
+	}
+	
+	// 衝突判定
+	private void collisionCheck(){
+		boolean hit = false;
 		for(int i = 0; i < nearEntities.size(); i++){
 			if(Util.isCollided(this, nearEntities.get(i)) && nearEntities.get(i) != this){
-				r = 100;
-				g = 50;
+				hit = true;
 			}
 		}
-		clearNearEntity();
+		if(hit){
+			r = 255;
+			g = 60;
+		}else{
+			r = g = b = 0;
+		}
 		
-		x += Math.cos(direction);
-		y += Math.sin(direction);
+		clearNearEntity(); // 近接エンティティリストをクリア
+	}
+	
+	// 1フレーム分の移動
+	private void move(){
+		double vecX = Math.cos(direction)*speed, vecY = Math.sin(direction)*speed;
+		float newX = (float)(x + vecX), newY = (float)(y + vecY);
 		
-		reregist();
+		// 壁との衝突判定
+		if(newX - size < 0){ // 左壁
+			direction = Math.atan2(vecY, -vecX);
+			newX = size*2 - newX;
+		}else if(world.getWidth() < newX + size){ // 右壁
+			direction = Math.atan2(vecY, -vecX);
+			newX = world.getWidth()*2 - size*2 - newX;
+		}
+		
+		if(newY - size < 0){ // 上壁
+			direction = Math.atan2(-vecY, vecX);
+			newY = size*2 - newY;
+		}else if(world.getHeight() < newY + size){ // 下壁
+			direction = Math.atan2(-vecY, vecX);
+			newY = world.getHeight()*2 - size*2 - newY;
+		}
+		
+		x = newX;
+		y = newY;
+		reregist();	// 空間ツリーへの再登録
 	}
 
 	@Override
 	public void draw(Display display) {
 		display.noStroke();
-		display.fill(r, g, b);
+		display.fill(r, g, b, 200);
 		display.ellipse(x, y, size*2, size*2);
 	}
 	
 	@Override
 	protected void reregist() {
-		obj.remove();
-		sightObj.remove();
+		treeBody.remove();
+		treeSight.remove();
 		SplitMap sm = world.getSplitMap();
-		sm.regist(obj);
-		sm.regist(sightObj);
+		sm.regist(treeBody);
+		sm.regist(treeSight);
 	}
-	
-	// セッタ
-	public void setSightTreeObject(TreeObject obj){ this.sightObj = obj; }
-
-	// ゲッタ
-	public float getSight(){ return sight; }
 }

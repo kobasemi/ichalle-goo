@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jp.ac.kansai_u.kutc.firefly.waltzforai.World;
-import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Animal;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Entity;
 
 // 4分木分割空間の管理クラス
@@ -41,57 +40,77 @@ public class SplitMap {
 	
 	// 衝突判定は動くEntity(Animalサブクラス)の中で行う
 	// このメソッドでは衝突の可能性のあるEntityを検出する
-	public void collisionCheck(){
+	public void allCheckNearEntity(){
 		if(spaceTree[0] == null){
 			return;
 		}
-		List<Entity> stack = new ArrayList<Entity>();
-		collisionCheckInSpace(0, stack);
+
+		List<Entity> sStack = new ArrayList<Entity>();
+		List<Entity> oStack = new ArrayList<Entity>();
+		checkNearEntity(0, sStack, oStack);
 	}
 	
-	private boolean collisionCheckInSpace(int elem, List<Entity> stack){
-		// 空間内の主体エンティティの視界と客体エンティティの実体の衝突リスト作成
+	private boolean checkNearEntity(int elem, List<Entity> sStack, List<Entity> oStack){
+		// 空間内の主体エンティティの視界と客体エンティティの実体の近接オブジェクトリスト作成
 		TreeObject sObj = spaceTree[elem].getSightHead();
 		while(sObj != null){
 			TreeObject oObj = spaceTree[elem].getEntityHead();
 			while(oObj != null){
-				// 主体エンティティの近接オブジェクトリストに客体オブジェクトを追加する
+				// 主体エンティティの近接オブジェクトリストに近接オブジェクトリストを追加する
 				sObj.getEntity().addNearEntity(oObj.getEntity());
 				oObj = oObj.getNext();
 			}
-			// スタックとの衝突リスト作成
-			for(Entity e: stack){
-				sObj.getEntity().addNearEntity(e);
+			// 客体スタックとの近接オブジェクトリスト作成
+			for(int i = 0; i < oStack.size(); i++){
+				sObj.getEntity().addNearEntity(oStack.get(i));
 			}
 			sObj = sObj.getNext();
 		}
 		
-		boolean existChild = false;
+		// 主体スタックとの近接オブジェクトリスト作成
+		for(int i = 0; i < sStack.size(); i++){
+			TreeObject oObj = spaceTree[elem].getEntityHead();
+			while(oObj != null){
+				// 近接オブジェクトリストに客体オブジェクトを追加する
+				sStack.get(i).addNearEntity(oObj.getEntity());
+				oObj = oObj.getNext();
+			}
+		}
 		
 		// 子空間に移動
-		int objNum = 0;
+		boolean existChild = false;
+		int oObjNum = 0, sObjNum = 0;
 		int nextElem;
 		for(int i = 0; i < 4; i++){
 			nextElem = elem*4+1+i;
 			if(nextElem < spaceNum[splitLevel+1] && spaceTree[nextElem] != null){
 				if(!existChild){
-					// 登録オブジェクトをスタックに追加
+					// この空間のオブジェクトをスタックに追加
+					sObj = spaceTree[elem].getSightHead();
 					TreeObject oObj = spaceTree[elem].getEntityHead();
+					while(sObj != null){
+						sStack.add(sObj.getEntity());
+						sObjNum++;
+						sObj = sObj.getNext();
+					}
 					while(oObj != null){
-						stack.add(oObj.getEntity());
-						objNum++;
+						oStack.add(oObj.getEntity());
+						oObjNum++;
 						oObj = oObj.getNext();
 					}
 				}
 				existChild = true;
-				collisionCheckInSpace(nextElem, stack); // 子空間へ
+				checkNearEntity(nextElem, sStack, oStack); // 子空間へ
 			}
 		}
 		
-		// スタックからオブジェクトを外す
+		// スタックからこの空間のオブジェクトを外す
 		if(existChild){
-			for(int i = 0; i < objNum; i++){
-				stack.remove(stack.size()-1);
+			for(int i = 0; i < oObjNum; i++){
+				oStack.remove(oStack.size()-1);
+			}
+			for(int i = 0; i < sObjNum; i++){
+				sStack.remove(sStack.size()-1);
 			}
 		}
 		
@@ -101,12 +120,7 @@ public class SplitMap {
 	// ツリーオブジェクトの登録
 	public boolean regist(TreeObject obj){
 		Entity e = obj.getEntity();
-		float size;
-		if(obj.isSubstance()){
-			size = e.getSize();
-		}else{
-			size = ((Animal)e).getSight();
-		}
+		float size = obj.getObjectSize();
 		
 		int elem = getTreeNumber(e.getX()-size, e.getY()-size, e.getX()+size, e.getY()+size);
 		if(elem > -1){
@@ -131,7 +145,20 @@ public class SplitMap {
 	}
 	
 	// 座標から所属する空間の要素番号を割り出す
-	public int getTreeNumber(float left, float top, float right, float bottom){
+	private int getTreeNumber(float left, float top, float right, float bottom){
+		if(left < 0){
+			left = 0;
+		}
+		if(top < 0){
+			top = 0;
+		}
+		if(world.getWidth() <= right){
+			right = world.getWidth()-1;
+		}
+		if(world.getHeight() <= bottom){
+			bottom = world.getHeight()-1;
+		}
+		
 		// 左上と右下の空間番号を算出
 		long lt = getMortonNumber(left, top);
 		long rb = getMortonNumber(right, bottom);
