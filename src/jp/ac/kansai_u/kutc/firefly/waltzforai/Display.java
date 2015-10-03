@@ -3,7 +3,7 @@ package jp.ac.kansai_u.kutc.firefly.waltzforai;
 import java.util.List;
 
 import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Entity;
-import jp.ac.kansai_u.kutc.firefly.waltzforal.frame.MainFrame;
+import jp.ac.kansai_u.kutc.firefly.waltzforai.frame.MainFrame;
 import processing.core.PApplet;
 import processing.core.PVector;
 
@@ -16,13 +16,9 @@ public class Display extends PApplet{
 
 	private PVector basePos; 		// 現在の描画範囲
 
-	/*public static void main(String args[]){
-		PApplet.main(new String[] { "--present", "jp.ac.kansai_u.kutc.firefly.waltzforai.Display" });
-	}*/
-
 	public Display(MainFrame mainFrame){
 		this.mainFrame = mainFrame;
-		world = new World(this, 1000, 700);
+		world = new World(this, 10000, 10000);
 		world.start();
 
 		basePos = new PVector();

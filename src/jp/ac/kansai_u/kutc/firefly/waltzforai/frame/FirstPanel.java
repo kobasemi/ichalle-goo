@@ -1,4 +1,4 @@
-package jp.ac.kansai_u.kutc.firefly.waltzforal.frame;
+package jp.ac.kansai_u.kutc.firefly.waltzforai.frame;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;

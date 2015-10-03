@@ -1,6 +1,7 @@
 package jp.ac.kansai_u.kutc.firefly.waltzforai;
 
-import jp.ac.kansai_u.kutc.firefly.waltzforal.frame.MainFrame;
+import jp.ac.kansai_u.kutc.firefly.waltzforai.frame.MainFrame;
+
 import javax.swing.JFrame;
 
 public class WaltzForAI {

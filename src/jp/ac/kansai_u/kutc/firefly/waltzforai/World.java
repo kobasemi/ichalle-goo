@@ -34,7 +34,7 @@ public class World extends Thread{
 		splitMap = new SplitMap(this, 5);
 		
 		entities = new ArrayList<Entity>();
-		energy = 1000;
+		energy = 3000;
 		randomCreateEntity(energy);
 		display.setEntityList(new ArrayList<Entity>(entities));
 		
@@ -50,7 +50,7 @@ public class World extends Thread{
 	private void randomCreateEntity(int energy){
 		int spend = 1;
 		while((energy -= spend) >= 0){
-			Animal animal = new PlantEater(this, (float)Math.random()*(width-100)+50, (float)Math.random()*(width-100)+50, 5, spend);
+			Animal animal = new PlantEater(this, (float)Math.random()*(width-100)+50, (float)Math.random()*(width-100)+50, 30, spend);
 			entities.add(animal);
 			splitMap.regist(new TreeBody(animal));
 			splitMap.regist(new TreeSight(animal));

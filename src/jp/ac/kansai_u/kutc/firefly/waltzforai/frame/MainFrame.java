@@ -1,4 +1,4 @@
-package jp.ac.kansai_u.kutc.firefly.waltzforal.frame;
+package jp.ac.kansai_u.kutc.firefly.waltzforai.frame;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -74,7 +74,9 @@ public class MainFrame extends JFrame{
 		// 開くパネルを見えるようにする
 		if (str == PanelNames[0])
 			fp.setVisible(true);
-		if (str == PanelNames[1])
+		if (str == PanelNames[1]){
 			mp.setVisible(true);
+			mp.add(mp.display);
+		}
 	}
 }
