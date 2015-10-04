@@ -80,6 +80,7 @@ public abstract class Entity {
 	public float getSize(){ return size; }
 	public float getSight(){ return sight; }
 	public double getDirection() { return direction; }
+	public double getFov() { return fov; }
 	public double getWalkPace() { return walkPace; }
 	public List<Entity> getNearEntities() { return nearEntities; }
 	public List<Entity> getInSightFriends() { return inSightFriends; }
