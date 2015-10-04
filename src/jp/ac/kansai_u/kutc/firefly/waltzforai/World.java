@@ -6,7 +6,9 @@ import java.util.List;
 
 import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Animal;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Entity;
-import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.PlantEater;
+import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Plant;
+import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.PlantEater.PlantEaterBuilder;
+import jp.ac.kansai_u.kutc.firefly.waltzforai.gene.GeneManager;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.splitmap.SplitMap;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.splitmap.TreeBody;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.splitmap.TreeSight;
@@ -16,9 +18,10 @@ public class World extends Thread{
 	private Display display;
 	
 	private final List<Entity> entities;	// ワールド内に存在する全てのエンティティのリスト
-	private final int energy;				// ワールドのエネルギー総量
+	private double energy;					// ワールドのエネルギー総量
 	private final int width, height;		// ワールドの大きさ
 	private SplitMap splitMap;				// 4分木分割空間
+	private GeneManager geneManager;		// 遺伝子管理クラス
 	
 	private int idealFPS;					// 目標のFPS
 	private LinkedList<Long> processTime;	// 過去数フレームの実行時間
@@ -32,9 +35,10 @@ public class World extends Thread{
 		this.width = width;
 		this.height = height;
 		splitMap = new SplitMap(this, 5);
+		geneManager = new GeneManager(this);
 		
 		entities = new ArrayList<Entity>();
-		energy = 3000;
+		energy = 1000000;
 		randomCreateEntity(energy);
 		display.setEntityList(new ArrayList<Entity>(entities));
 		
@@ -47,14 +51,63 @@ public class World extends Thread{
 		running = true;
 	}
 	
-	private void randomCreateEntity(int energy){
-		int spend = 1;
-		while((energy -= spend) >= 0){
-			Animal animal = new PlantEater(this, (float)Math.random()*(width-100)+50, (float)Math.random()*(width-100)+50, 30, spend);
-			entities.add(animal);
-			splitMap.regist(new TreeBody(animal));
-			splitMap.regist(new TreeSight(animal));
+	private void randomCreateEntity(double energy){
+		double plantSpend = 100 + Math.random()*900;
+		double animalspend = 1000 + Math.random()*9000;
+		while(energy >= plantSpend + animalspend){
+			energy -= plantSpend + animalspend;
+			addEntity(new Plant(this, (float)(Math.random()*width), (float)(Math.random()*height), plantSpend));
+			addEntity(new PlantEaterBuilder(this, (float)(Math.random()*width), (float)(Math.random()*height), animalspend).random().build());
 		}
+	}
+	
+	public void returnEnergy(Animal animal){
+		double moveCost = animal.getCost() * animal.getWalkPace();
+		if(animal.getEnergy() <= moveCost){
+			moveCost = animal.getEnergy();
+		}
+		animal.reduceEnergy(moveCost);
+		this.energy += moveCost;
+		
+		// 100分の1の確率でplantを追加する
+		if((int)(Math.random()*100) == 0){
+			double spend = (int)(100 + Math.random()*900);
+			if(this.energy > spend){
+				this.energy -= spend;
+			}else{
+				spend = this.energy;
+				this.energy = 0;
+			}
+			float spawnX = (float)(animal.getX()+(200-Math.random()*400));
+			float spawnY = (float)(animal.getY()+(200-Math.random()*400));
+			if(spawnX < 0){
+				spawnX = -spawnX;
+			}else if(width < spawnX){
+				spawnX = width*2 - spawnX;
+			}
+			if(spawnY < 0){
+				spawnY = -spawnY;
+			}else if(width < spawnY){
+				spawnY = height*2 - spawnY;
+			}
+			addEntity(new Plant(this, spawnX, spawnY, spend));
+		}
+	}
+	
+	// エンティティをワールドに追加する
+	public void addEntity(Entity entity){
+		entities.add(entity);
+		if(entity instanceof Animal){
+			splitMap.regist(new TreeBody(entity));
+			splitMap.regist(new TreeSight((Animal) entity));
+		}else{
+			splitMap.regist(new TreeBody(entity));
+		}
+	}
+	
+	// エンティティをワールドから削除
+	public void removeEntity(Entity entity){
+		entities.remove(entity);
 	}
 	
 	// フレーム毎に実行される更新メソッド (このクラスの肝)
@@ -134,6 +187,7 @@ public class World extends Thread{
 	
 	// ゲッタ
 	public SplitMap getSplitMap(){ return splitMap; }
+	public GeneManager getGeneManager() { return geneManager; }
 	public int getWidth(){ return width; }
 	public int getHeight(){ return height; }
 	public double getRealFPS(){ return realFPS; }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jp.ac.kansai_u.kutc.firefly.waltzforai.World;
+import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Animal;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Entity;
 
 // 4分木分割空間の管理クラス
@@ -45,16 +46,16 @@ public class SplitMap {
 			return;
 		}
 
-		List<Entity> sStack = new ArrayList<Entity>();
+		List<Animal> sStack = new ArrayList<Animal>();
 		List<Entity> oStack = new ArrayList<Entity>();
 		checkNearEntity(0, sStack, oStack);
 	}
 	
-	private boolean checkNearEntity(int elem, List<Entity> sStack, List<Entity> oStack){
+	private boolean checkNearEntity(int elem, List<Animal> sStack, List<Entity> oStack){
 		// 空間内の主体エンティティの視界と客体エンティティの実体の近接オブジェクトリスト作成
-		TreeObject sObj = spaceTree[elem].getSightHead();
+		TreeSight sObj = spaceTree[elem].getSightHead();
 		while(sObj != null){
-			TreeObject oObj = spaceTree[elem].getEntityHead();
+			TreeBody oObj = spaceTree[elem].getEntityHead();
 			while(oObj != null){
 				// 主体エンティティの近接オブジェクトリストに近接オブジェクトリストを追加する
 				sObj.getEntity().addNearEntity(oObj.getEntity());
@@ -69,7 +70,7 @@ public class SplitMap {
 		
 		// 主体スタックとの近接オブジェクトリスト作成
 		for(int i = 0; i < sStack.size(); i++){
-			TreeObject oObj = spaceTree[elem].getEntityHead();
+			TreeBody oObj = spaceTree[elem].getEntityHead();
 			while(oObj != null){
 				// 近接オブジェクトリストに客体オブジェクトを追加する
 				sStack.get(i).addNearEntity(oObj.getEntity());

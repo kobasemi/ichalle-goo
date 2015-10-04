@@ -12,4 +12,7 @@ public class TreeBody extends TreeObject{
 	public float getObjectSize() {
 		return entity.getSize();
 	}
+	
+	@Override
+	public TreeBody getNext(){ return (TreeBody) next; }
 }

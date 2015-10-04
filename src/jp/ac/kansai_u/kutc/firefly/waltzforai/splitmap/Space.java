@@ -51,6 +51,6 @@ public class Space {
 	}
 	
 	// ゲッタ
-	public TreeObject getEntityHead(){ return bodyHead; }
-	public TreeObject getSightHead(){ return sightHead; }
+	public TreeBody getEntityHead(){ return bodyHead; }
+	public TreeSight getSightHead(){ return sightHead; }
 }
