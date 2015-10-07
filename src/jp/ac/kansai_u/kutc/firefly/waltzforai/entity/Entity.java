@@ -25,6 +25,9 @@ public abstract class Entity {
 	// フレーム毎に状態を更新
 	public abstract void update();
 	
+	// 移動の実行
+	public abstract void move();
+	
 	// ディスプレイに描画
 	public abstract void draw(Display display);
 	

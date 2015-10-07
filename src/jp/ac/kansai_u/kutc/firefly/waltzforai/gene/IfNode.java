@@ -7,6 +7,7 @@ import java.util.Random;
 
 import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Animal;
 
+// 遺伝子コード、分岐。非終端子
 public class IfNode extends GeneNode {
 	private Condition condition;	// どの条件で分岐させるか
 	private double value;			// 0.0~1.0の値。この値を元に分岐条件を変化させる
@@ -18,16 +19,30 @@ public class IfNode extends GeneNode {
 		this.value = Math.random();
 	}
 	
+	// 突然変異
+	@Override
+	public void mutation() {
+		if(Math.random() < 0.5){	// 逆位50% ランダム変異50%
+			this.condition = Condition.random();
+			this.value = Math.random();
+		}else{
+			GeneNode tmp = tNext;
+			tNext = fNext;
+			fNext = tmp;
+		}
+	}
+	
 	@Override
 	public void perform(Animal animal) {
 		// 条件分岐の結果
 		boolean result = true;
 		
 		// このif文で条件分岐メソッドを呼び出す
+		// メソッドを追加したらここも書き加えてください
 		if(condition.equals(Condition.enemyInRange)){
-			result = enemyInRange(animal);
+			result = enemyInSight(animal);
 		}else if(condition.equals(Condition.friendInRange)){
-			result = friendInRange(animal);
+			result = friendInSight(animal);
 		}
 		
 		// 結果に基づいて次のアクションを呼び出す
@@ -42,6 +57,11 @@ public class IfNode extends GeneNode {
 		}
 	}
 	
+	// ゲッタ
+	@Override
+	public GeneNode getNext(){ return tNext; }
+	public GeneNode getFalseNext(){ return fNext; }
+	
 	// セッタ
 	@Override
 	public void setNext(GeneNode gn){ this.tNext = gn; }
@@ -52,7 +72,7 @@ public class IfNode extends GeneNode {
 	/* 条件分岐メソッドを追加したら、enumとperformメソッドの方にも情報を追加してやってください */
 
 	// 視界内に敵がいるか
-	private boolean enemyInRange(Animal animal){
+	private boolean enemyInSight(Animal animal){
 		if(animal.getInSightEnemies().size() > 0){
 			return true;
 		}else{
@@ -61,7 +81,7 @@ public class IfNode extends GeneNode {
 	}
 	
 	// 視界内に味方がいるか
-	private boolean friendInRange(Animal animal){
+	private boolean friendInSight(Animal animal){
 		if(animal.getInSightFriends().size() > 0){
 			return true;
 		}else{
@@ -71,7 +91,8 @@ public class IfNode extends GeneNode {
 }
 
 enum Condition{
-	// ここに条件分岐メソッド名を追加してください
+	// ここに条件分岐メソッド名を追加する
+	// メソッドを追加したらここも書き加えてください
 	enemyInRange, friendInRange;
 	
 	// 以下はランダム選択用

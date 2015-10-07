@@ -7,6 +7,7 @@ import java.util.Random;
 
 import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Animal;
 
+// 遺伝子コード、行動。終端子
 public class ActionNode extends GeneNode {
 	private Action action;			// どの行動を実行するか
 	private double value;			// 0.0~1.0の値。この値を元に行動の内容を変化させる
@@ -14,6 +15,12 @@ public class ActionNode extends GeneNode {
 	
 	public ActionNode(GeneManager gm) {
 		super(gm);
+		mutation();
+	}
+	
+	// 突然変異
+	@Override
+	public void mutation(){
 		this.action = Action.random();
 		this.value = Math.random();
 	}
@@ -21,6 +28,7 @@ public class ActionNode extends GeneNode {
 	@Override
 	public void perform(Animal animal) {
 		// このif文でアクションメソッドを呼び出す
+		// メソッドを追加したらここも書き加えてください
 		if(action.equals(Action.runFromEnemy)){
 			runFromEnemy(animal);
 		}else if(action.equals(Action.setWalkPace)){
@@ -32,6 +40,10 @@ public class ActionNode extends GeneNode {
 			next.perform(animal);
 		}
 	}
+	
+	// ゲッタ
+	@Override
+	public GeneNode getNext(){ return next; }
 	
 	// セッタ
 	public void setNext(GeneNode gn){ this.next = gn; }
@@ -59,6 +71,7 @@ public class ActionNode extends GeneNode {
 
 enum Action{
 	// ここにメソッド名を追加する
+	// メソッドを追加したらここも書き加えてください
 	runFromEnemy, setWalkPace;
 	
 	// 以下はランダム選択用

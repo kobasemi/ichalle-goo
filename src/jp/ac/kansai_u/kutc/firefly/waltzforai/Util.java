@@ -10,9 +10,8 @@ public class Util {
 
 	// 2点間のユークリッド距離を求める
 	public static double getDistance(float x1, float y1, float x2, float y2){
-		float xDist = Math.abs(x2 - x1);
-		float yDist = Math.abs(y2 - y1);
-		return Math.sqrt(xDist*xDist + yDist*yDist);
+		float dx = x2 - x1, dy = y2 - y1;
+		return Math.sqrt(dx*dx + dy*dy);
 	}
 	
 	// 2つのエンティティが衝突しているか
@@ -21,6 +20,18 @@ public class Util {
 			return true;
 		}
 		return false;
+	}
+	
+	// 2点を結ぶベクトルの角度を求める
+	public static double getRadian(float x1, float y1, float x2, float y2) {
+		return Math.atan2(y2 - y1, x2 - x1);
+	}
+	
+	// 2本のベクトルがなす角度を求める
+	public static double getRadianSub(double deg1, double deg2){
+		double digreeSub = deg2 - deg1;
+		digreeSub -= (int)(digreeSub/(Math.PI*2))*Math.PI*2;
+		return digreeSub > Math.PI ? digreeSub - Math.PI*2 : digreeSub;
 	}
 	
 	// 他エンティティが視界内にいるか (se:主体  oe:客体)
@@ -46,8 +57,14 @@ public class Util {
 		double delta = v1x*v2y - v2x*v1y;
 		double alpha = (dx*v2y - dy*v2x) / delta;
 		double beta = (-dx*v1y + dy*v1x) / delta;
-		if(alpha >= 0.0 && beta >= 0.0){
-			return true;
+		if(alpha >= 0.0 && beta >= 0.0){	// 2ベクトルのなす角度が180度を超えると判定が逆転する
+			if(se.getFov() < Math.PI){
+				return true;
+			}
+		}else{
+			if(Math.PI < se.getFov()){
+				return true;
+			}
 		}
 
 		//主体の視界である扇形の2つのベクトル線分のいずれかと客体が交点を持つ場合
@@ -77,5 +94,5 @@ public class Util {
 		}
 		
 		return false;
-	}
+	}	
 }

@@ -10,8 +10,8 @@ public class Plant extends Entity {
 		
 		// energyに比例してsizeを大きくする
 		GeneManager gm = this.world.getGeneManager();
-		double sizeMin = gm.getSizeMin(), sizeMax = gm.getSizeMax(); 
-		this.size = (float)(sizeMin + (this.energy/1000 > 1.0 ? 1.0 : this.energy/1000) * (sizeMax-sizeMin));
+		double energyMin = gm.getPlantEnergyMin(), energyMax = gm.getPlantEnergyMax(), sizeMin = gm.getSizeMin(), sizeMax = gm.getSizeMax(); 
+		this.size = (float)(sizeMin + ((this.energy-energyMin) / (energyMax-energyMin)) * (sizeMax-sizeMin));
 	}
 
 	@Override
@@ -21,7 +21,13 @@ public class Plant extends Entity {
 	}
 
 	@Override
+	public void move() {
+		// TODO 移動もしないかな
+	}
+	
+	@Override
 	public void draw(Display display) {
+		display.noStroke();
 		display.fill(0, 200, 30, 200);
 		display.ellipse(x, y, size*2, size*2);
 	}

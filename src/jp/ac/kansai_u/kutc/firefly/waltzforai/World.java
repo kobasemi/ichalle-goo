@@ -38,7 +38,7 @@ public class World extends Thread{
 		geneManager = new GeneManager(this);
 		
 		entities = new ArrayList<Entity>();
-		energy = 1000000;
+		energy = 100000;
 		randomCreateEntity(energy);
 		display.setEntityList(new ArrayList<Entity>(entities));
 		
@@ -52,8 +52,9 @@ public class World extends Thread{
 	}
 	
 	private void randomCreateEntity(double energy){
-		double plantSpend = 100 + Math.random()*900;
-		double animalspend = 1000 + Math.random()*9000;
+		double energyMin = geneManager.getPlantEnergyMin(), energyMax = geneManager.getPlantEnergyMax();
+		double plantSpend = energyMin + Math.random()*(energyMax-energyMin);
+		double animalspend = 10000 + Math.random()*90000;
 		while(energy >= plantSpend + animalspend){
 			energy -= plantSpend + animalspend;
 			addEntity(new Plant(this, (float)(Math.random()*width), (float)(Math.random()*height), plantSpend));
@@ -61,7 +62,27 @@ public class World extends Thread{
 		}
 	}
 	
-	public void returnEnergy(Animal animal){
+	// animalの全てのエネルギーをワールドに戻す
+	public void returnAllEnergy(Animal animal){
+		double energy = animal.getEnergy();
+		animal.reduceEnergy(energy);
+
+		// エンティティのenergyを全て使って周りにplantを出現させる
+		double energyMin = geneManager.getPlantEnergyMin(), energyMax = geneManager.getPlantEnergyMax();
+		while(energy > 0){
+			double spend = energyMin + Math.random()*(energyMax-energyMin);
+			if(energy > spend){
+				energy -= spend;
+			}else{
+				spend = energy;
+				energy = 0;
+			}
+			popPlantAroundAnimal(animal, spend);
+		}
+	}
+	
+	// animalのcostエネルギーをワールドに戻す
+	public void returnCostEnergy(Animal animal){
 		double moveCost = animal.getCost() * animal.getWalkPace();
 		if(animal.getEnergy() <= moveCost){
 			moveCost = animal.getEnergy();
@@ -71,27 +92,33 @@ public class World extends Thread{
 		
 		// 100分の1の確率でplantを追加する
 		if((int)(Math.random()*100) == 0){
-			double spend = (int)(100 + Math.random()*900);
+			double energyMin = geneManager.getPlantEnergyMin(), energyMax = geneManager.getPlantEnergyMax();
+			double spend = energyMin + Math.random()*(energyMax-energyMin);
 			if(this.energy > spend){
 				this.energy -= spend;
 			}else{
 				spend = this.energy;
 				this.energy = 0;
 			}
-			float spawnX = (float)(animal.getX()+(200-Math.random()*400));
-			float spawnY = (float)(animal.getY()+(200-Math.random()*400));
-			if(spawnX < 0){
-				spawnX = -spawnX;
-			}else if(width < spawnX){
-				spawnX = width*2 - spawnX;
-			}
-			if(spawnY < 0){
-				spawnY = -spawnY;
-			}else if(width < spawnY){
-				spawnY = height*2 - spawnY;
-			}
-			addEntity(new Plant(this, spawnX, spawnY, spend));
+			popPlantAroundAnimal(animal, spend);
 		}
+	}
+	
+	// animalの周りにplantを出現させる
+	private void popPlantAroundAnimal(Animal animal, double spend){
+		float spawnX = (float)(animal.getX()+(200-Math.random()*400));
+		float spawnY = (float)(animal.getY()+(200-Math.random()*400));
+		if(spawnX < 0){
+			spawnX = -spawnX;
+		}else if(width < spawnX){
+			spawnX = width*2 - spawnX;
+		}
+		if(spawnY < 0){
+			spawnY = -spawnY;
+		}else if(width < spawnY){
+			spawnY = height*2 - spawnY;
+		}
+		addEntity(new Plant(this, spawnX, spawnY, spend));
 	}
 	
 	// エンティティをワールドに追加する
@@ -120,9 +147,14 @@ public class World extends Thread{
 		// 当たりそうなエンティティの検出
 		splitMap.allCheckNearEntity();
 		
-		// 全てのエンティティを更新
+		// 全てのエンティティの状態を更新
 		for(int i = 0; i < updateList.size(); i++){
 			updateList.get(i).update();
+		}
+		
+		// 全てのエンティティの位置を更新
+		for(int i = 0; i < updateList.size(); i++){
+			updateList.get(i).move();
 		}
 		
 		// 計算にかかったFPSを算出
