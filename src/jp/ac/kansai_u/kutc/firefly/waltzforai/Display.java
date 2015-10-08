@@ -33,7 +33,7 @@ public class Display extends PApplet{
 	public void draw(){
 		background(255);
 		
-		/*stroke(200);
+		stroke(200);
 		for(int i = 0; i < 65; i++){
 			stroke(200);
 			strokeWeight(0.25f);
@@ -59,7 +59,7 @@ public class Display extends PApplet{
 			}
 			line(i*world.getWidth()/64, 0, i*world.getWidth()/64, world.getHeight());
 			line(0, i*world.getHeight()/64, world.getWidth(), i*world.getHeight()/64);
-		}*/
+		}
 		
 		fill(0);
 		for(Entity e: entities){

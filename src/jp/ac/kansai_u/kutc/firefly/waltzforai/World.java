@@ -7,7 +7,6 @@ import java.util.List;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Animal;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Entity;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Plant;
-import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.PlantEater.PlantEaterBuilder;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.gene.GeneManager;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.splitmap.SplitMap;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.splitmap.TreeBody;
@@ -58,7 +57,7 @@ public class World extends Thread{
 		while(energy >= plantSpend + animalspend){
 			energy -= plantSpend + animalspend;
 			addEntity(new Plant(this, (float)(Math.random()*width), (float)(Math.random()*height), plantSpend));
-			addEntity(new PlantEaterBuilder(this, (float)(Math.random()*width), (float)(Math.random()*height), animalspend).random().build());
+			addEntity(new Animal.Builder(this, (float)(Math.random()*width), (float)(Math.random()*height), animalspend).random().build());
 		}
 	}
 	
