@@ -39,11 +39,11 @@ public class Space {
 	public boolean onRemove(TreeObject obj){
 		if(obj instanceof TreeBody){
 			if(bodyHead != null && bodyHead.equals(obj)){
-				bodyHead = (TreeBody) bodyHead.getNext();
+				bodyHead = bodyHead.getNext();
 			}
 		}else{
 			if(sightHead != null && sightHead.equals(obj)){
-				sightHead = (TreeSight) sightHead.getNext();
+				sightHead = sightHead.getNext();
 			}
 		}
 		

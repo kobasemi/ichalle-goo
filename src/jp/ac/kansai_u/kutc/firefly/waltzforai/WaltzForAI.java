@@ -8,6 +8,5 @@ public class WaltzForAI {
 	public static void main(String args[]){
 		MainFrame mf = new MainFrame();
 		mf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		mf.setVisible(true);
 	}
 }

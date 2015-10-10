@@ -46,6 +46,7 @@ public class ActionNode extends GeneNode {
 	public GeneNode getNext(){ return next; }
 	
 	// セッタ
+	@Override
 	public void setNext(GeneNode gn){ this.next = gn; }
 	
 	

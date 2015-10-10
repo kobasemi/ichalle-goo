@@ -4,6 +4,7 @@ import java.util.List;
 
 import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Entity;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.frame.MainFrame;
+import jp.ac.kansai_u.kutc.firefly.waltzforai.frame.SecondFrame;
 import processing.core.PApplet;
 import processing.core.PVector;
 
@@ -13,6 +14,12 @@ public class Display extends PApplet{
 	private MainFrame mainFrame;
 	private World world;			// 描画スレッド
 	private List<Entity> entities;
+	//謙隆add
+	public static int fleshEaterNum;
+	public static int plantEaterNum;
+	public static int omnivorousNum;
+	public static int plantNum;
+	public static int totalplant;
 
 	private PVector basePos; 		// 現在の描画範囲
 
@@ -26,13 +33,13 @@ public class Display extends PApplet{
 
 	@Override
 	public void setup(){
-		size(mainFrame.getWidth(), mainFrame.getHeight());
+		setBounds(MainFrame.w/3, 0, (MainFrame.w - (MainFrame.w / 3)), MainFrame.h);
 	}
 
 	@Override
 	public void draw(){
 		background(255);
-		
+
 		stroke(200);
 		for(int i = 0; i < 65; i++){
 			stroke(200);
@@ -60,12 +67,26 @@ public class Display extends PApplet{
 			line(i*world.getWidth()/64, 0, i*world.getWidth()/64, world.getHeight());
 			line(0, i*world.getHeight()/64, world.getWidth(), i*world.getHeight()/64);
 		}
-		
+
 		fill(0);
 		for(Entity e: entities){
 			e.draw(this);
 		}
+		// 謙隆add
+		omnivorousNum = omnivorousNum - (fleshEaterNum + plantEaterNum);
+		SecondFrame.plant=plantNum;
+		SecondFrame.fleshE=fleshEaterNum;
+		SecondFrame.plantE=plantEaterNum;
+		SecondFrame.omni=omnivorousNum;
+		plantNum = 0;
+		fleshEaterNum = 0;
+		plantEaterNum = 0;
+		omnivorousNum = 0;
 	}
+
+
+
+
 
 	// TODO: 基本はマウスのみの操作（拡大・ゲームスピード変更・一時停止）
 	// TODO: キーボードによるショートカット操作
