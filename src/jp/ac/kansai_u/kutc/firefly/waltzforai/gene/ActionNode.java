@@ -31,8 +31,20 @@ public class ActionNode extends GeneNode {
 		// メソッドを追加したらここも書き加えてください
 		if(action.equals(Action.runFromEnemy)){
 			runFromEnemy(animal);
+		}else if(action.equals(Action.approachFriend)){
+			approachFriend(animal);
 		}else if(action.equals(Action.setWalkPace)){
 			setWalkPace(animal);
+		}else if(action.equals(Action.setRandomDirection)){
+			setRandomDirection(animal);
+		}else if(action.equals(Action.turnRight)){
+			turnRight(animal);
+		}else if(action.equals(Action.turnLeft)){
+			turnLeft(animal);
+		}else if(action.equals(Action.turnBack)){
+			turnBack(animal);
+		}else if(action.equals(Action.doNothing)){
+			/* do nothing */
 		}
 		
 		// 次のアクションを呼び出す
@@ -62,18 +74,48 @@ public class ActionNode extends GeneNode {
 		}
 	}
 	
+	//視界内友好エンティティに近づく
+	private void approachFriend(Animal animal){
+		List<Animal> list = animal.getInSightFriends();
+		if(!list.isEmpty()){
+			// 複数いる場合はvalueで決定する
+			animal.setTarget((list.get((int)(list.size()*value))));
+		}
+	}
+
 	// 移動速度の変更
 	private void setWalkPace(Animal animal){
 		// valueから最小値から最大値の間で算出する
 		double min = gm.getWalkPaceMin(), max = gm.getWalkPaceMax();
 		animal.setWalkPace(min + value*(max - min));
 	}
+	
+	//進行方向をランダム変更
+	private void setRandomDirection(Animal animal){
+		animal.setDirection(value * Math.PI * 2);
+	}
+	
+	//進行方向を右に変更
+	private void turnRight(Animal animal){
+		animal.setDirection(animal.getDirection() - 1/2*Math.PI);
+	}
+
+	//進行方向を左に変更
+	private void turnLeft(Animal animal){
+		animal.setDirection(animal.getDirection() + 1/2*Math.PI);
+	}
+
+	//進行方向を180度変更
+	private void turnBack(Animal animal){
+		animal.setDirection(animal.getDirection() + Math.PI);
+	}
+	
 }
 
 enum Action{
 	// ここにメソッド名を追加する
 	// メソッドを追加したらここも書き加えてください
-	runFromEnemy, setWalkPace;
+	runFromEnemy, approachFriend, setWalkPace, setRandomDirection, turnRight, turnLeft, turnBack, doNothing;
 	
 	// 以下はランダム選択用
 	private static final List<Action> VALUES = Collections.unmodifiableList(Arrays.asList(values()));

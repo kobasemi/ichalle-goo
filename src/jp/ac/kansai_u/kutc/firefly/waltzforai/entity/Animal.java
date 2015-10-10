@@ -134,7 +134,7 @@ public class Animal extends Entity {
 			// 謙隆add
 			display.fleshEaterNum++;
 		}else{
-
+			display.rect(x-size/2, y-size/2, size, size);	//仮描画
 		}
 		display.text(String.format("%.0f", energy), x+20, y-20);
 		display.text(String.format("%d", lifeSpan-age), x+20, y+20);
@@ -281,6 +281,7 @@ public class Animal extends Entity {
 	public void setWalkPace(double walkPace) { this.walkPace = walkPace; }
 	public void setDirection(double direction) { this.direction = direction; }
 	public void setAvoidEnemy(Entity avoidEnemy) { this.avoidEnemy = avoidEnemy; }
+	public void setTarget(Entity target) { this.target = target; }
 	public void setChildTime(int childTime) { this.childTime = childTime; }
 
 	// ゲッタ

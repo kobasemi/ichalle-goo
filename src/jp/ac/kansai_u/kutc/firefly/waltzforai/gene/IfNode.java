@@ -43,6 +43,8 @@ public class IfNode extends GeneNode {
 			result = enemyInSight(animal);
 		}else if(condition.equals(Condition.friendInRange)){
 			result = friendInSight(animal);
+		}else if(condition.equals(Condition.canMakeChild)){
+			result = canMakeChild(animal);
 		}
 		
 		// 結果に基づいて次のアクションを呼び出す
@@ -88,12 +90,17 @@ public class IfNode extends GeneNode {
 			return false;
 		}
 	}
+	
+	//子どもが作れるか
+	private boolean canMakeChild(Animal animal){
+		return (animal.getChildSpan() == 0);
+	}
 }
 
 enum Condition{
 	// ここに条件分岐メソッド名を追加する
 	// メソッドを追加したらここも書き加えてください
-	enemyInRange, friendInRange;
+	enemyInRange, friendInRange, canMakeChild;
 	
 	// 以下はランダム選択用
 	private static final List<Condition> VALUES = Collections.unmodifiableList(Arrays.asList(values()));
