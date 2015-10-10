@@ -22,7 +22,8 @@ public class World extends Thread{
 	private SplitMap splitMap;				// 4分木分割空間
 	private GeneManager geneManager;		// 遺伝子管理クラス
 	
-	private int idealFPS;					// 目標のFPS
+	private double gameSpeed;				// ゲームスピード
+	private int limitFPS;					// FPSの制限
 	private LinkedList<Long> processTime;	// 過去数フレームの実行時間
 	private double realFPS;					// 実際のFPS
 	private boolean suspended;				// 一時停止中か？
@@ -37,24 +38,35 @@ public class World extends Thread{
 		geneManager = new GeneManager(this);
 		
 		entities = new ArrayList<Entity>();
-		energy = 100000;
+		energy = 10000000;
 		randomCreateEntity(energy);
 		display.setEntityList(new ArrayList<Entity>(entities));
 		
-		realFPS = idealFPS = 60;
+		gameSpeed = 1.0;
+		realFPS = limitFPS = 60;
 		processTime = new LinkedList<Long>();
 		for(int i = 0; i < 30; i++){	// 過去30フレームを記録する
-			processTime.add(1000L/idealFPS);
+			processTime.add(1000L/limitFPS);
 		}
 		suspended = false;
 		running = true;
 	}
 	
+	// エネルギー分だけ
 	private void randomCreateEntity(double energy){
+		if(this.energy < energy){
+			return;
+		}
+		this.energy -= energy;
 		double energyMin = geneManager.getPlantEnergyMin(), energyMax = geneManager.getPlantEnergyMax();
-		double plantSpend = energyMin + Math.random()*(energyMax-energyMin);
-		double animalspend = 10000 + Math.random()*90000;
-		while(energy >= plantSpend + animalspend){
+		double plantSpend, animalspend;
+		while(energy > 0.01){
+			plantSpend = energyMin + Math.random()*(energyMax-energyMin);
+			animalspend = 100000 + Math.random()*100000;
+			if(energy < plantSpend + animalspend){
+				animalspend = energy;
+				plantSpend = 0;
+			}
 			energy -= plantSpend + animalspend;
 			addEntity(new Plant(this, (float)(Math.random()*width), (float)(Math.random()*height), plantSpend));
 			addEntity(new Animal.Builder(this, (float)(Math.random()*width), (float)(Math.random()*height), animalspend).random().build());
@@ -82,15 +94,15 @@ public class World extends Thread{
 	
 	// animalのcostエネルギーをワールドに戻す
 	public void returnCostEnergy(Animal animal){
-		double moveCost = animal.getCost() * animal.getWalkPace();
+		double moveCost = animal.getCost() * animal.getWalkPace() * gameSpeed;
 		if(animal.getEnergy() <= moveCost){
 			moveCost = animal.getEnergy();
 		}
 		animal.reduceEnergy(moveCost);
 		this.energy += moveCost;
 		
-		// 100分の1の確率でplantを追加する
-		if((int)(Math.random()*100) == 0){
+		// 300分の1の確率でplantを追加する
+		if((int)(Math.random()*300/gameSpeed) == 0){
 			double energyMin = geneManager.getPlantEnergyMin(), energyMax = geneManager.getPlantEnergyMax();
 			double spend = energyMin + Math.random()*(energyMax-energyMin);
 			if(this.energy > spend){
@@ -114,7 +126,7 @@ public class World extends Thread{
 		}
 		if(spawnY < 0){
 			spawnY = -spawnY;
-		}else if(width < spawnY){
+		}else if(height < spawnY){
 			spawnY = height*2 - spawnY;
 		}
 		addEntity(new Plant(this, spawnX, spawnY, spend));
@@ -194,7 +206,7 @@ public class World extends Thread{
 		  	newTime = System.currentTimeMillis() << 16;
 
 		  	// どれだけの時間sleepするか計算する
-		  	long idealSleep = (1000 << 16) / idealFPS;
+		  	long idealSleep = (1000 << 16) / limitFPS;
 		  	long sleepTime = idealSleep - (newTime - oldTime) - error;
 		  	if (sleepTime < 0){
 		  		sleepTime = 0;
@@ -216,10 +228,36 @@ public class World extends Thread{
 		}
 	}
 	
+	// ゲームスピードへの加算
+	public void addGameSpeed(int add){
+		gameSpeed = gameSpeed+add < 0 ? 0 : gameSpeed+add;
+	}
+	
+	// FPS制限への加算
+	public void addLimitFPS(int add){
+		limitFPS = limitFPS+add < 1 ? 1 : limitFPS+add;
+	}
+	
+	// スレッドの一時停止 or 再開
+	public synchronized void pause() {
+		if(suspended){
+			suspended = false;
+			notify();
+		}else{
+			suspended = true;
+		}
+	}
+
+	// スレッドの終了
+	public void stopWorld(){
+		running = false;
+	}
+	
 	// ゲッタ
 	public SplitMap getSplitMap(){ return splitMap; }
 	public GeneManager getGeneManager() { return geneManager; }
 	public int getWidth(){ return width; }
 	public int getHeight(){ return height; }
+	public double getGameSpeed(){ return gameSpeed; }
 	public double getRealFPS(){ return realFPS; }
 }

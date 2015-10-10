@@ -35,6 +35,7 @@ public class Plant extends Entity {
 	// 食べられた。ツリーとワールドから削除
 	@Override
 	public void die(){
+		isAlive = false;
 		treeBody.remove();
 		world.removeEntity(this);
 	}

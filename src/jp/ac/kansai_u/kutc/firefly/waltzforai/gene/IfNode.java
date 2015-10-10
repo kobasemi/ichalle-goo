@@ -39,10 +39,14 @@ public class IfNode extends GeneNode {
 		
 		// このif文で条件分岐メソッドを呼び出す
 		// メソッドを追加したらここも書き加えてください
-		if(condition.equals(Condition.enemyInRange)){
+		if(condition.equals(Condition.preyInSight)){
+			result = preyInSight(animal);
+		}else if(condition.equals(Condition.enemyInRange)){
 			result = enemyInSight(animal);
 		}else if(condition.equals(Condition.friendInRange)){
 			result = friendInSight(animal);
+		}else if(condition.equals(Condition.randomBranch)){
+			result = randomBranch(animal);
 		}
 		
 		// 結果に基づいて次のアクションを呼び出す
@@ -71,6 +75,15 @@ public class IfNode extends GeneNode {
 	/* 以下が発生しうる条件分岐です。思いつきでどんどん追加しちゃってOKです。戻り値はboolean型で */
 	/* 条件分岐メソッドを追加したら、enumとperformメソッドの方にも情報を追加してやってください */
 
+	// 視界内に獲物がいるか
+	private boolean preyInSight(Animal animal){
+		if(animal.getInSightPreys().size() > 0){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
 	// 視界内に敵がいるか
 	private boolean enemyInSight(Animal animal){
 		if(animal.getInSightEnemies().size() > 0){
@@ -88,12 +101,21 @@ public class IfNode extends GeneNode {
 			return false;
 		}
 	}
+	
+	// 確率で分岐する
+	private boolean randomBranch(Animal animal){
+		if(Math.random() < value){
+			return true;
+		}else{
+			return false;
+		}
+	}
 }
 
 enum Condition{
 	// ここに条件分岐メソッド名を追加する
 	// メソッドを追加したらここも書き加えてください
-	enemyInRange, friendInRange;
+	preyInSight, enemyInRange, friendInRange, randomBranch;
 	
 	// 以下はランダム選択用
 	private static final List<Condition> VALUES = Collections.unmodifiableList(Arrays.asList(values()));

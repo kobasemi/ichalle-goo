@@ -14,12 +14,14 @@ public abstract class Entity {
 	protected float x, y;					// 座標
 	protected double energy;				// エネルギー
 	protected float size;					// 大きさ (半径)
+	protected boolean isAlive;				// 生死
 	
 	public Entity(World world, float x, float y, double energy){
 		this.world = world;
 		this.x = x;
 		this.y = y;
 		this.energy = energy;
+		this.isAlive = true;
 	}
 	
 	// フレーム毎に状態を更新
@@ -37,7 +39,7 @@ public abstract class Entity {
 	// エネルギーの消費
 	public void reduceEnergy(double energy){ 
 		this.energy -= energy;
-		if(this.energy <= 0){
+		if(this.energy <= 0.01){
 			die();
 		}
 	}
@@ -50,4 +52,5 @@ public abstract class Entity {
 	public float getY(){ return y; }
 	public float getSize(){ return size; }
 	public double getEnergy(){ return energy; }
+	public boolean isAlive(){ return isAlive; }
 }

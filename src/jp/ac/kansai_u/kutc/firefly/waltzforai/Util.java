@@ -51,7 +51,7 @@ public class Util {
 		double v1Rad = se.getDirection() + se.getFov()/2;	// 扇形の1つめのベクトルの角度(ラジアン)
 		double v1x = se.getSight() * Math.cos(v1Rad);
 		double v1y = se.getSight() * Math.sin(v1Rad);
-		double v2Rad = se.getDirection() - se.getFov()/2;	// 扇形の2つめのベクトルの角度(ラジアン)
+		double v2Rad = v1Rad - se.getFov();					// 扇形の2つめのベクトルの角度(ラジアン)
 		double v2x = se.getSight() * Math.cos(v2Rad);
 		double v2y = se.getSight() * Math.sin(v2Rad);
 		double delta = v1x*v2y - v2x*v1y;

@@ -5,7 +5,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import jp.ac.kansai_u.kutc.firefly.waltzforai.Util;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Animal;
+import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Entity;
 
 // 遺伝子コード、行動。終端子
 public class ActionNode extends GeneNode {
@@ -31,8 +33,20 @@ public class ActionNode extends GeneNode {
 		// メソッドを追加したらここも書き加えてください
 		if(action.equals(Action.runFromEnemy)){
 			runFromEnemy(animal);
+		}else if(action.equals(Action.runFromEnemyDirection)){
+			runFromEnemyDirection(animal);
+		}else if(action.equals(Action.chasePrey)){
+			chasePrey(animal);
+		}else if(action.equals(Action.chaseFriend)){
+			chaseFriend(animal);
+		}else if(action.equals(Action.changeDirection)){
+			changeDirection(animal);
+		}else if(action.equals(Action.randomChangeDirection)){
+			randomChangeDirection(animal);
 		}else if(action.equals(Action.setWalkPace)){
 			setWalkPace(animal);
+		}else if(action.equals(Action.setRandomWalkPace)){
+			setRandomWalkPace(animal);
 		}
 		
 		// 次のアクションを呼び出す
@@ -56,23 +70,66 @@ public class ActionNode extends GeneNode {
 	private void runFromEnemy(Animal animal){
 		List<Animal> list = animal.getInSightEnemies();
 		if(list.size() > 0){
-			// 複数いる場合はvalueで決定する
-			animal.setAvoidEnemy((list.get((int)(list.size()*value))));
+			int elem = (int)(value*list.size());
+			animal.setDirection(Util.getRadian(list.get(elem).getX(), list.get(elem).getY(), animal.getX(), animal.getY()));
 		}
 	}
 	
-	// 移動速度の変更
+	// 一定の角度で近くの敵から逃げる
+	private void runFromEnemyDirection(Animal animal){
+		List<Animal> list = animal.getInSightEnemies();
+		if(list.size() > 0){
+			animal.setDirection(Util.getRadian(list.get(0).getX(), list.get(0).getY(), animal.getX(), animal.getY())+(value*2*Math.PI-Math.PI));
+		}
+	}
+	
+	// 近くの獲物へ向かう
+	private void chasePrey(Animal animal){
+		List<Entity> list = animal.getInSightPreys();
+		if(list.size() > 0){
+			int elem = (int)(value*list.size());
+			animal.setDirection(Util.getRadian(animal.getX(), animal.getY(), list.get(elem).getX(), list.get(elem).getY()));
+		}
+	}
+	
+	// 近くの味方へ向かう
+	private void chaseFriend(Animal animal){
+		List<Animal> list = animal.getInSightFriends();
+		if(list.size() > 0){
+			int elem = (int)(value*list.size());
+			animal.setDirection(Util.getRadian(animal.getX(), animal.getY(), list.get(elem).getX(), list.get(elem).getY()));
+		}
+	}
+	
+	// エンティティの向きを変える
+	private void changeDirection(Animal animal){
+		animal.setDirection(animal.getDirection()+(value*2*Math.PI-Math.PI));
+	}
+	
+	// エンティティの向きをランダムに変える
+	private void randomChangeDirection(Animal animal){
+		animal.setDirection(animal.getDirection()+(Math.random()*2*Math.PI-Math.PI));
+	}
+	
+	// 移動速度を変更する
 	private void setWalkPace(Animal animal){
 		// valueから最小値から最大値の間で算出する
 		double min = gm.getWalkPaceMin(), max = gm.getWalkPaceMax();
 		animal.setWalkPace(min + value*(max - min));
+	}
+	
+	// 移動速度をランダムに変更する
+	private void setRandomWalkPace(Animal animal){
+		// valueから最小値から最大値の間で算出する
+		double min = gm.getWalkPaceMin(), max = gm.getWalkPaceMax();
+		animal.setWalkPace(min + Math.random()*(max - min));
 	}
 }
 
 enum Action{
 	// ここにメソッド名を追加する
 	// メソッドを追加したらここも書き加えてください
-	runFromEnemy, setWalkPace;
+	runFromEnemy, runFromEnemyDirection, chasePrey, chaseFriend, changeDirection, randomChangeDirection, setWalkPace, setRandomWalkPace;
 	
 	// 以下はランダム選択用
 	private static final List<Action> VALUES = Collections.unmodifiableList(Arrays.asList(values()));

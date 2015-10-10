@@ -1,6 +1,7 @@
 package jp.ac.kansai_u.kutc.firefly.waltzforai.gene;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
@@ -14,16 +15,27 @@ import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Plant;
 public class GeneManager {
 	private World world;	// 所属ワールド
 	
-	private double plantEnergyMin = 1000;	// 植物のエネルギー
-	private double plantEnergyMax = 3000;
+	private List<Animal> plantEaterOrigin;	// 始祖動物（初期エンティティの親）
+	private List<Animal> fleshEaterOrigin;
+	private List<Animal> mixedEaterOrigin;
+	private int originNum = 4;				// 始祖動物の種類数
+	private int decentDepth = 3;			// 親エンティティを何代前まで遡って比較するか
+	
+	private double plantEaterPreyRank = 0.75;	// 食性による捕食可能ランクの補正
+	private double mixedEaterPreyRank = 1.0;
+	private double fleshEaterPreyRank = 1.25;
+	
+	private double plantEnergyMin = 3000;	// 植物のエネルギー
+	private double plantEnergyMax = 9000;
 	
 	// 遺伝子情報、ステータスの最小値，最大値、コスト
 	private float rgbMin = 0;					// 体色
 	private float rgbMax = 255;
-	private double FleshEaterCost = 2;			// 肉食のコスト
-	private double PlantEaterCost = 5;			// 草食のコスト
-	private double MixedEaterCost = 10;			// 雑食のコスト
+	private double plantEaterCost = 10;			// 草食のコスト
+	private double fleshEaterCost = 20;			// 肉食のコスト
+	private double mixedEaterCost = 30;			// 雑食のコスト
 	private double EdibilityChangeRate = 0.05;	// 食性が変わる確率
+	private double preyRankCost = 100;			// 捕食可能ランクのコスト
 	private double fovMin = Math.PI/9.0;		// 視野角
 	private double fovMax = Math.PI*2;
 	private double fovCost = 5;
@@ -33,12 +45,12 @@ public class GeneManager {
 	private double speedMin = 0.2;				// スピード
 	private double speedMax = 2.0;
 	private double speedCost = 10;
-	private int lifeSpanMin = 50000;			// 寿命の長さ
-	private int lifeSpanMax = 250000;
-	private int lifeSpanCost = 10;
-	private int childSpanMin = 60;				// 子供が作れるようになるまでの時間 (小さい方が高コスト)
-	private int childSpanMax = 1800;
-	private int childSpanCost = 5;
+	private double lifeSpanMin = 50000;			// 寿命の長さ
+	private double lifeSpanMax = 250000;
+	private double lifeSpanCost = 10;
+	private double childSpanMin = 180;			// 子供が作れるようになるまでの時間 (小さい方が高コスト)
+	private double childSpanMax = 360;
+	private double childSpanCost = 5;
 	private float sizeMin = 5.0f;				// 大きさ
 	private float sizeMax = 10.0f;
 	private double walkPaceMin = 0.0;			// 歩く速さ
@@ -50,6 +62,15 @@ public class GeneManager {
 	
 	public GeneManager(World world){
 		this.world = world;
+		
+		plantEaterOrigin = new ArrayList<Animal>(originNum);
+		fleshEaterOrigin = new ArrayList<Animal>(originNum);
+		mixedEaterOrigin = new ArrayList<Animal>(originNum);
+		for(int i = 0; i < originNum; i++){
+			plantEaterOrigin.add(new Animal.Builder(this.world, 0, 0, 0).build());
+			fleshEaterOrigin.add(new Animal.Builder(this.world, 0, 0, 0).build());
+			mixedEaterOrigin.add(new Animal.Builder(this.world, 0, 0, 0).build());
+		}
 	}
 	
 	// 動物をランダムに生成する
@@ -79,14 +100,28 @@ public class GeneManager {
 		float clg = (float)(rgbMin+Math.random()*(rgbMax-rgbMin));
 		float clb = (float)(rgbMin+Math.random()*(rgbMax-rgbMin));
 		
+		// 親エンティティを始祖動物からランダムに選択
+		int parentElem1 = (int)(Math.random()*originNum), parentElem2 = (int)(Math.random()*originNum);
+		if(originNum > 1) while(parentElem1 == parentElem2) parentElem2 = (int)(Math.random()*originNum);
+		Animal parent1 = null, parent2 = null;
+		
 		Edibility edibility = Edibility.random();
 		if(edibility.equals(Edibility.Flesh)){
-			cost += FleshEaterCost;
+			cost += fleshEaterCost;
+			parent1 = fleshEaterOrigin.get(parentElem1);
+			parent2 = fleshEaterOrigin.get(parentElem2);
 		}else if(edibility.equals(Edibility.Plant)){
-			cost += PlantEaterCost;
+			cost += plantEaterCost;
+			parent1 = plantEaterOrigin.get(parentElem1);
+			parent2 = plantEaterOrigin.get(parentElem2);
 		}else if(edibility.equals(Edibility.Mixed)){
-			cost += MixedEaterCost;
+			cost += mixedEaterCost;
+			parent1 = mixedEaterOrigin.get(parentElem1);
+			parent2 = mixedEaterOrigin.get(parentElem2);
 		}
+		
+		double preyRank = Math.random();
+		cost += preyRank*preyRankCost;
 		
 		double fovVal = Math.random();
 		double fov = fovMin + fovVal*(fovMax-fovMin);
@@ -101,17 +136,22 @@ public class GeneManager {
 		cost += speedVal*speedCost;
 		
 		double lifeSpanVal = Math.random();
-		int lifeSpan = (int)(lifeSpanMin + lifeSpanVal*(lifeSpanMax-lifeSpanMin));
+		double lifeSpan = lifeSpanMin + lifeSpanVal*(lifeSpanMax-lifeSpanMin);
 		cost += lifeSpanVal*lifeSpanCost;
 		
 		double childSpanVal = Math.random();
-		int childSpan = (int)(childSpanMin + childSpanVal*(childSpanMax-childSpanMin));
+		double childSpan = childSpanMin + childSpanVal*(childSpanMax-childSpanMin);
 		cost += (1.0-childSpanVal)*childSpanCost;
 		
-		b.setParents(null, null);
+		float size = (float)(sizeMin + (cost/100 > 1.0 ? 1.0 : cost/100) * (sizeMax-sizeMin));
+		sight = size + sight;	// 視野は身体のサイズにプラスする
+		
+		b.setParents(parent1, parent2);
 		b.setGeneHead(geneHead);
 		b.setEdibility(edibility);
 		b.setColor(clr, clg, clb);
+		b.setPreyRank(preyRank);
+		b.setSize(size);
 		b.setFov(fov);
 		b.setSight(sight);
 		b.setSpeed(speed);
@@ -162,13 +202,17 @@ public class GeneManager {
 			edibility = e2.getEdibility();
 		}
 		if(edibility.equals(Edibility.Flesh)){
-			cost += FleshEaterCost;
+			cost += fleshEaterCost;
 		}else if(edibility.equals(Edibility.Plant)){
-			cost += PlantEaterCost;
+			cost += plantEaterCost;
 		}else if(edibility.equals(Edibility.Mixed)){
-			cost += MixedEaterCost;
+			cost += mixedEaterCost;
 		}
 		
+		double preyRank = (e1.getPreyRank() + e2.getPreyRank()) / 2.0;
+		preyRank = mutateState(preyRank, 1.0, 0.0);
+		double preyRankVal = getStateRatio(preyRank, 1.0, 0.0);
+		cost += preyRankVal*preyRankCost;
 		
 		double fov = (e1.getFov() + e2.getFov()) / 2.0;
 		fov = mutateState(fov, fovMax, fovMin);
@@ -185,21 +229,26 @@ public class GeneManager {
 		double speedVal = getStateRatio(speed, speedMax, speedMin);
 		cost += speedVal*speedCost;
 		
-		int lifeSpan = (e1.getLifeSpan() + e2.getLifeSpan()) / 2;
-		lifeSpan = (int)mutateState(lifeSpan, lifeSpanMax, lifeSpanMin);
+		double lifeSpan = (e1.getLifeSpan() + e2.getLifeSpan()) / 2.0;
+		lifeSpan = mutateState(lifeSpan, lifeSpanMax, lifeSpanMin);
 		double lifeSpanVal = getStateRatio(lifeSpan, lifeSpanMax, lifeSpanMin);
-		cost += lifeSpanVal*lifeSpanMin;
+		cost += lifeSpanVal*lifeSpanCost;
 		
-		int childSpan = (e1.getChildSpan() + e1.getChildSpan() ) / 2;
-		childSpan = (int)mutateState(childSpan, childSpanMax, childSpanMin);
+		double childSpan = (e1.getChildSpan() + e1.getChildSpan() ) / 2.0;
+		childSpan = mutateState(childSpan, childSpanMax, childSpanMin);
 		double childSpanVal = getStateRatio(childSpan, childSpanMax, childSpanMin);
 		cost += (1.0-childSpanVal)*childSpanCost;
+		
+		float size = (float)(sizeMin + (cost/100 > 1.0 ? 1.0 : cost/100) * (sizeMax-sizeMin));
+		sight = size + sight;	// 視野は身体のサイズにプラスする
 		
 		// ビルダーの設定
 		b.setParents(e1, e2);
 		b.setGeneHead(geneTree);
 		b.setEdibility(edibility);
 		b.setColor(clr, clg, clb);
+		b.setPreyRank(preyRankVal);
+		b.setSize(size);
 		b.setFov(fov);
 		b.setSight(sight);
 		b.setSpeed(speed);
@@ -207,9 +256,7 @@ public class GeneManager {
 		b.setChildSpan(childSpan);
 		b.setCost(cost);
 		
-		// 子供の生成、ワールドへの追加
-		Animal child = b.build();
-		world.addEntity(child);
+		world.addEntity(b.build());
 	}
 	
 	// 能力値の割合を求める
@@ -313,14 +360,39 @@ public class GeneManager {
 	}
 	
 	// 友好エンティティか？
-	public boolean isFriend(Animal se, Animal oe){
-		if(se.getClass().equals(oe.getClass())){
-			return true;
+	public boolean isFriend(Animal animal, Entity entity){
+		if(entity instanceof Plant){
+			return false;
+		}
+		// ハッシュセットで親を比較する
+		HashSet<Animal> descent1 = new HashSet<Animal>(), descent2 = new HashSet<Animal>();
+		descent1.add(animal); descent2.add((Animal)entity);
+		checkParents(animal, descent1, decentDepth);
+		checkParents((Animal)entity, descent2, decentDepth);
+		for(Animal parent: descent1){
+			// 同じ親があれば友好
+			if(descent2.contains(parent)){
+				return true;
+			}
 		}
 		return false;
 	}
 	
-	// 捕食可能なタイプのエンティティか？
+	// 親エンティティを調べる
+	private void checkParents(Animal animal, HashSet<Animal> descent, int depth){
+		if(depth <= 0){
+			return;
+		}
+		Animal parent1 = animal.getParent1(), parent2 = animal.getParent2();
+		if(parent1 != null && descent.add(parent1)){
+			checkParents(parent1, descent, depth-1);
+		}
+		if(parent2 != null && descent.add(parent2)){
+			checkParents(parent2, descent, depth-1);
+		}
+	}
+	
+	// 捕食可能なエンティティか？
 	public boolean isEdible(Animal se, Entity oe){
 		Edibility edibility = se.getEdibility();
 		if(edibility.equals(Edibility.Plant) || edibility.equals(Edibility.Mixed)){
@@ -329,7 +401,7 @@ public class GeneManager {
 			}
 		}
 		if(edibility.equals(Edibility.Flesh) || edibility.equals(Edibility.Mixed)){
-			if(oe instanceof Animal){
+			if(oe instanceof Animal && se.getPreyRank() > ((Animal)oe).getPreyRank()){
 				return true;
 			}
 		}
@@ -337,6 +409,9 @@ public class GeneManager {
 	}
 
 	// ゲッタ
+	public double getPlantEaterPreyRank() { return plantEaterPreyRank; }
+	public double getFleshEaterPreyRank() { return fleshEaterPreyRank; }
+	public double getMixedEaterPreyRank() { return mixedEaterPreyRank; }
 	public double getPlantEnergyMin() { return plantEnergyMin; }
 	public double getPlantEnergyMax() { return plantEnergyMax; }
 	public float getSizeMin() { return sizeMin; }
