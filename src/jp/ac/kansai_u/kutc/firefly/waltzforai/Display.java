@@ -84,10 +84,6 @@ public class Display extends PApplet{
 		omnivorousNum = 0;
 	}
 
-
-
-
-
 	// TODO: 基本はマウスのみの操作（拡大・ゲームスピード変更・一時停止）
 	// TODO: キーボードによるショートカット操作
 

@@ -3,6 +3,8 @@ package jp.ac.kansai_u.kutc.firefly.waltzforai.frame;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
@@ -12,82 +14,109 @@ import javax.swing.JPanel;
 
 import jp.ac.kansai_u.kutc.firefly.waltzforai.Display;
 
+import org.jfree.chart.ChartColor;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.RingPlot;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.category.LineAndShapeRenderer;
+import org.jfree.chart.title.LegendTitle;
+import org.jfree.chart.title.TextTitle;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.ui.RectangleInsets;
 
 import processing.core.PApplet;
 
-//　プレイ画面を表示するフレーム
-public class SecondFrame{
+//　プレイ画面を表示するフレーム // 一番下にスレッド
+public class SecondFrame {
 	public Display processing;
 	MainFrame mf;
 	private static JLayeredPane layerPane;
 	static int category1 = 10;
-	private static JFreeChart chart;
 	private static ChartPanel chartP;
 	private static ChartPanel oresenP;
 	static JFrame frame;
 	private static JPanel infoP;
 	private static JPanel titleP;
 	private static JPanel baseP;
-	public static int plant, fleshE, plantE, omni; 
-	static int sec=0;
-	
-	private static String[] series = {"plant", "plantEater", "fleshEater", "omvirous"};
-	private static String[] time = {"0", "2", "4", "6", "8", "10"};
+	private static JPanel LineP1;
+	public static int plant, fleshE, plantE, omni;
+	private static int sec = 2, secNum = 20;
+	public static JFreeChart oresen;
+	public static ChartPanel bouP;
 
+	private static String[] seriesName = { "plant", "plantEater", "fleshEater",
+			"omvirous" };
+	private static LinkedList<String> time = new LinkedList<String>();
+	private static LinkedList<Integer> plantList = new LinkedList<Integer>();
+	private static LinkedList<Integer> plantEList = new LinkedList<Integer>();
+	private static LinkedList<Integer> fleshEList = new LinkedList<Integer>();
+	private static LinkedList<Integer> omniList = new LinkedList<Integer>();
 
-	SecondFrame(){
+	SecondFrame() {
+		// 折れ線グラフで使うlistの初期化
+		for (int i = 0; i < 10; i++) {
+			time.add(String.valueOf(sec * (i + 1)));
+			plantList.add(0);
+			plantEList.add(0);
+			fleshEList.add(0);
+			omniList.add(0);
+		}
 		frame = new JFrame();
-	    frame.setSize(MainFrame.w, MainFrame.h);
-	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(MainFrame.w, MainFrame.h);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		layerPane = new JLayeredPane(); // 配置は重ねることができるが，色は重ねられないみたい
 		layerPane.setLayout(null);
-		layerPane.setBackground(new Color(0,0,0,0));
+		layerPane.setBackground(new Color(0, 0, 0, 0));
 
 		// 　ベースパネル
 		baseP = new JPanel();
-		baseP.setBackground(new Color(0,40,90));
+		baseP.setBackground(new Color(0, 40, 90));
 		baseP.setBounds(0, 0, MainFrame.w / 3, MainFrame.h);
-
+		
+		// ラインパネル
+		/*LineP1 = new JPanel();
+		LineP1.setBounds(0, MainFrame.h/8*3, MainFrame.w/3,MainFrame.h/8*3+10);
+		LineP1.setBackground(new Color(255, 255, 240));
+		*/
 		// タイトルパネル
 		titleP = new JPanel();
-		titleP.setBackground(new Color(0,0,0,0));
+		titleP.setBackground(new Color(0, 0, 0, 0));
 		titleP.setBounds(0, 0, MainFrame.w / 3, MainFrame.h / 8);
-
 		// タイトルラベル
 		JLabel titleLabel = new JLabel("Waltz for AI");
 		titleLabel.setFont(new Font("Century", Font.ITALIC, 64));
 		titleLabel.setForeground(new Color(255, 255, 240));
-		titleLabel.setBackground(new Color(1,1,1,0));
+		titleLabel.setBackground(new Color(1, 1, 1, 0));
 		titleP.add(titleLabel);
 
 		// 情報パネル
 		infoP = new JPanel();
-		infoP.setBounds(0, MainFrame.h/8, MainFrame.w/3, MainFrame.h/2);
+		infoP.setBounds(0, MainFrame.h / 8, MainFrame.w / 3, MainFrame.h/8*2);
 		infoP.setLayout(new BoxLayout(infoP, BoxLayout.Y_AXIS)); // 縦に配置するレイアウト
 		infoP.setBackground(new Color(0, 0, 0, 0));
 		// 情報ラベル（BGM）
 		JLabel infoLabel = new JLabel("<html>　BGM<br><br><html>");
 		infoLabel.setFont(new Font("Century", Font.PLAIN, 24));
 		infoLabel.setForeground(new Color(255, 255, 240));
-		infoLabel.setBackground(new Color(1,1,1,0));
+		infoLabel.setBackground(new Color(1, 1, 1, 0));
 		// 情報ラベル（個体数)
 		JLabel numL = new JLabel("<html>　Number of individuals<br><html>");
 		numL.setFont(new Font("Century", Font.PLAIN, 30));
 		numL.setForeground(new Color(255, 255, 240));
 		// 情報ラベル（個体数　草)
-		JLabel grassL = new JLabel("　・plant:"+plant);
+		JLabel grassL = new JLabel("　・plant:" + plant);
 		grassL.setFont(new Font("Century", Font.PLAIN, 24));
 		grassL.setForeground(new Color(255, 255, 240));
 		// 情報ラベル（草食）
-		JLabel grassEatL = new JLabel("　・plant-eater:"+plantE);
+		JLabel grassEatL = new JLabel("　・plant-eater:" + plantE);
 		grassEatL.setFont(new Font("Century", Font.PLAIN, 24));
 		grassEatL.setForeground(new Color(255, 255, 240));
 		// 情報ラベル（肉食）
@@ -105,82 +134,80 @@ public class SecondFrame{
 		infoP.add(grassEatL);
 		infoP.add(fleshEatL);
 		infoP.add(omniL);
-
-		// 円グラフ描画パネル
-		DefaultPieDataset data = new DefaultPieDataset();
-		data.setValue("Category 1", 10);
-		data.setValue("Category 2", 20);
-		data.setValue("Category 3", 30);
-		chart = ChartFactory.createPieChart("Simple Pie Chart",
-				data, true, true, false);
-		 chartP = new ChartPanel(chart);
-		chartP.setBackground(new Color(0, 0, 0, 10));
-		Plot chart_plot = chart.getPlot();
-		chart_plot.setBackgroundPaint(new Color(0, 0, 0, 10));
-		chart_plot.setBackgroundAlpha(0.3f);
-		chart.setBackgroundPaint(new Color(0, 0, 0, 10));
-		chartP.setBounds(0, MainFrame.h / 3, MainFrame.w / 3,
-				MainFrame.h / 3);
-
+		
 		// 折れ線グラフ
 		DefaultCategoryDataset data2 = new DefaultCategoryDataset();
-		data2.addValue(300, "Category 1", "2005年");
-		data2.addValue(500, "Category 1", "2006年");
-		data2.addValue(120, "Category 1", "2007年");
-		JFreeChart oresen = ChartFactory.createLineChart("個体の増減", "年度", "秒",
-				data2, PlotOrientation.VERTICAL, true, false, false);
+		for (int i = 0; i < 10; i++) {
+			data2.addValue(plantList.get(i), seriesName[0], time.get(i));
+			data2.addValue(plantEList.get(i), seriesName[1], time.get(i));
+			data2.addValue(fleshEList.get(i), seriesName[2], time.get(i));
+			data2.addValue(omniList.get(i), seriesName[3], time.get(i));
+		}
+		oresen = ChartFactory.createLineChart(
+				"Transition of Individuals", "time(sec)", "Number", data2,
+				PlotOrientation.VERTICAL, true, false, false);
+		TextTitle oresenTitle = oresen.getTitle();
+		oresenTitle.setPaint(new Color(255, 255, 240));
+		Plot oresen_plot = oresen.getPlot();
+		oresen_plot.setBackgroundPaint(new Color(0, 0, 0, 0));
+		oresen_plot.setBackgroundAlpha(0.3f);
+		oresen.setBackgroundPaint(new Color(0, 0, 0, 0));
+		// 線の色
+		oresen_plot.setOutlinePaint(Color.white);
 		// 折れ線パネル
 		oresenP = new ChartPanel(oresen);
 		oresenP.setBackground(new Color(0, 0, 0, 10));
-		Plot oresen_plot = oresen.getPlot();
-		oresen_plot.setBackgroundPaint(new Color(0, 0, 0, 10));
-		oresen_plot.setBackgroundAlpha(0.3f);
-		oresen.setBackgroundPaint(new Color(0, 0, 0, 10));
-		oresenP.setBounds(0, MainFrame.h - MainFrame.h / 3, MainFrame.w / 3,
-				MainFrame.h / 3);
-
-		// Processingパネルを埋め込む
+		oresenP.setBounds(50, (MainFrame.h - MainFrame.h / 3),
+				MainFrame.w / 3 - 100, MainFrame.h / 3 - 50);
+		
+		oresendraw();
+		// Processingパネル
 		processing = new Display(mf);
 		processing.init();
+		 
+		// 円グラフ描画
+		piedraw();
+		// 棒グラフ
+		boudraw();
 
 		// 前面から背面にレイアウトする．
 		layerPane.add(infoP);
 		layerPane.add(titleP);
 		layerPane.add(chartP);
 		layerPane.add(oresenP);
+		layerPane.add(bouP);
 		layerPane.add(baseP);
-	    layerPane.add(processing);
-		//layerPane.add(underP);
-
+		layerPane.add(processing);
 		// フレームへ貼っつける
-	    frame.getContentPane().add(layerPane);
+		frame.getContentPane().add(layerPane);
 
 	}
 
 	// FisrFlameからボタンでフレームを切り替えられる
 	public void VisibleFlg(boolean flg) {
 		if (flg) {
-		frame.setVisible(true);
-		// グラフ再描画スレッド
-	    RepT thread = new RepT();
-	    Thread th = new Thread(thread);
-	    th.start();
-		}else{
+			frame.setVisible(true);
+			// グラフ再描画スレッド
+			RepT thread = new RepT();
+			Thread th = new Thread(thread);
+			th.start();
+		} else {
 			frame.setVisible(false);
 		}
 	}
 
 	// 再描画メソッド
-	public static void resetChart(){
-    	layerPane.remove(chartP); //一度パネルから外す.
-    	layerPane.remove(oresenP);
-    	layerPane.remove(infoP);
+	public static void resetChart() {
+		layerPane.remove(chartP); // 一度パネルから外す.
+		layerPane.remove(oresenP);
+		layerPane.remove(infoP);
+		layerPane.remove(bouP);
 
 		// 情報パネル
 		infoP = new JPanel();
-		infoP.setBounds(0, MainFrame.h / 8, MainFrame.w / 3, MainFrame.h / 2);
+		infoP.setBounds(0, MainFrame.h / 8, MainFrame.w / 3, MainFrame.h/8*2);
 		infoP.setLayout(new BoxLayout(infoP, BoxLayout.Y_AXIS)); // 縦に配置するレイアウト
-		infoP.setBackground(new Color(0, 40,90));
+		infoP.setBackground(new Color(0, 40, 90));
 		// 情報ラベル（BGM）
 		JLabel infoLabel = new JLabel("<html>　BGM<br><br><html>");
 		infoLabel.setFont(new Font("Century", Font.PLAIN, 24));
@@ -213,86 +240,137 @@ public class SecondFrame{
 		infoP.add(grassEatL);
 		infoP.add(fleshEatL);
 		infoP.add(omniL);
+		
+		// 折れ線グラフ
+		oresendraw();
+		// 円グラフ
+		piedraw();
+		// 棒グラフ
+		boudraw();
+		
+		// パネルに戻す
+		layerPane.add(infoP);
+		layerPane.add(chartP);
+		layerPane.add(oresenP);
+		layerPane.add(bouP);
 
+		frame.setVisible(true); // 更新を変え終わったら呼ぶ必要があるみたい
+	}
+	public static void oresendraw(){
+		// 折れ線グラフ
+		DefaultCategoryDataset data2 = new DefaultCategoryDataset();
+		// データの更新
+		plantList.remove(0);plantList.add(plant);
+		plantEList.remove(0);plantEList.add(plantE);
+		fleshEList.remove(0);fleshEList.add(fleshE);
+		omniList.remove(0);omniList.add(omni);
+		time.remove(0);secNum = secNum + sec;time.add(String.valueOf(secNum));
+		for (int i = 0; i < 10; i++) {
+			data2.addValue(plantList.get(i), seriesName[0], time.get(i));
+			data2.addValue(plantEList.get(i), seriesName[1], time.get(i));
+			data2.addValue(fleshEList.get(i), seriesName[2], time.get(i));
+			data2.addValue(omniList.get(i), seriesName[3], time.get(i));
+		}
+		JFreeChart oresen = ChartFactory.createLineChart(
+				"Transition of Individuals", "time(sec)", "Number", data2,
+				PlotOrientation.VERTICAL, true, false, false);
+		TextTitle oresenTitle = oresen.getTitle();
+		oresenTitle.setPaint(new Color(255, 255, 240));
+		Plot oresen_plot = oresen.getPlot();
+		oresen_plot.setBackgroundPaint(new Color(0, 0, 0, 0));
+		//oresen_plot.setBackgroundAlpha(0.3f);
+		oresen.setBackgroundPaint(new Color(0, 0, 0, 0));
+		// 線の色
+		oresen_plot.setOutlinePaint(Color.white);
+		// 折れ線パネル
+		oresenP = new ChartPanel(oresen);
+		oresenP.setBackground(new Color(0, 40, 90));
+		oresenP.setBounds(0, (MainFrame.h - MainFrame.h / 3),MainFrame.w / 3 - 50,
+				MainFrame.h / 3 - 50);
+		CategoryPlot plot = oresen.getCategoryPlot();
+		LineAndShapeRenderer renderer = (LineAndShapeRenderer) plot.getRenderer();
+		// 凡例
+		LegendTitle senlegend = oresen.getLegend();
+		senlegend.setBackgroundPaint(new Color(0, 40, 90));
+		senlegend.setItemPaint(new Color(255, 255, 240));
+		// 線の色
+		renderer.setSeriesPaint(0, ChartColor.GREEN);
+		renderer.setSeriesPaint(1, ChartColor.pink);
+		renderer.setSeriesPaint(2, ChartColor.RED);
+		renderer.setSeriesPaint(3, ChartColor.GRAY);
+	}
+	
+	public static void piedraw() {
 		// 円グラフ再設定
 		DefaultPieDataset data = new DefaultPieDataset();
 		data.setValue("plant", plant);
 		data.setValue("plantEater", plantE);
 		data.setValue("fleshEater", fleshE);
 		data.setValue("omnivorous", omni);
-		chart = ChartFactory.createPieChart("Simple Pie Chart", data, true,
-				true, false);
+		JFreeChart chart = ChartFactory.createRingChart(
+				"Percentage of Individuals", data, true, true, false);
+		TextTitle pieTitle = chart.getTitle();
+		pieTitle.setPaint(new Color(255, 255, 240));
+		RingPlot chart_plot = (RingPlot) chart.getPlot();
+		chart_plot.setBackgroundPaint(new Color(0, 0, 0, 0));
+		// 円グラフのセクションの色を設定する
+		RingPlot piePlot = (RingPlot) chart.getPlot();
+		piePlot.setSectionPaint("plant", Color.GREEN);
+		piePlot.setSectionPaint("plantEater", Color.PINK);
+		piePlot.setSectionPaint("fleshEater", Color.RED);
+		piePlot.setSectionPaint("omnivorous", Color.GRAY);
+		// 凡例
+		LegendTitle chlegend = chart.getLegend();
+		chlegend.setBackgroundPaint(new Color(0, 40, 90));
+		chlegend.setItemPaint(new Color(255, 255, 240));
 		chartP = new ChartPanel(chart);
 		chartP.setBackground(new Color(0, 40, 90));
-		Plot chart_plot = chart.getPlot();
-		chart_plot.setBackgroundPaint(new Color(0, 0, 0, 0));
-		chart_plot.setBackgroundAlpha(0.3f);
 		chart.setBackgroundPaint(new Color(0, 0, 0, 0));
-		chartP.setBounds(0, MainFrame.h / 3, MainFrame.w / 3,
-				MainFrame.h / 3);
-		// 折れ線グラフ
-		DefaultCategoryDataset data2 = new DefaultCategoryDataset();
-		data2.addValue(plant, series[0], time[0]);
-		data2.addValue(plantE, series[1], time[0]);
-		data2.addValue(fleshE, series[2], time[0]);
-		data2.addValue(omni, series[3], time[0]);
-		
-		data2.addValue(plant, series[0], time[1]);
-		data2.addValue(plantE, series[1], time[1]);
-		data2.addValue(fleshE, series[2], time[1]);
-		data2.addValue(omni, series[3], time[1]);
-		
-		data2.addValue(plant, series[0], time[2]);
-		data2.addValue(plantE, series[1], time[2]);
-		data2.addValue(fleshE, series[2], time[2]);
-		data2.addValue(omni, series[3], time[2]);
-		
-		data2.addValue(plant, series[0], time[3]);
-		data2.addValue(plantE, series[1], time[3]);
-		data2.addValue(fleshE, series[2], time[3]);
-		data2.addValue(omni, series[3], time[3]);
-		
-		JFreeChart oresen = ChartFactory.createLineChart("個体の増減", "時間", "個体数",
-				data2, PlotOrientation.VERTICAL, true, false, false);
-		// 折れ線パネル
-		oresenP = new ChartPanel(oresen);
-		oresenP.setBackground(new Color(0, 40, 90));
-		Plot oresen_plot = oresen.getPlot();
-		oresen_plot.setBackgroundPaint(new Color(0, 0, 0, 10));
-		oresen_plot.setBackgroundAlpha(0.3f);
-		oresen.setBackgroundPaint(new Color(0, 0, 0, 10));
-		oresenP.setBounds(0, MainFrame.h - MainFrame.h / 3, MainFrame.w / 3,
-				MainFrame.h / 3);
-
-		infoP.repaint();
-		chartP.repaint(); // chartをリロードする
-		oresenP.repaint(); // oresenをリロードする
-
-		// 円グラフの描画が追いついていない可能性があるため，sleepを入れる?比率がおかしいからかな?
-		/*
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {}
-		*/
-		// パネルに戻す
-		layerPane.add(infoP);
-		layerPane.add(chartP);
-		layerPane.add(oresenP);
-
-		frame.setVisible(true); // 更新を変え終わったら呼ぶ必要があるみたい
+		chartP.setBounds(30, MainFrame.h / 3 + 50, MainFrame.w / 3 - 370,
+				MainFrame.h / 3 - 100);
 	}
 
+	// 棒グラフの描画
+	public static void boudraw(){
+		// 棒グラフ
+		DefaultCategoryDataset boudata = new DefaultCategoryDataset();
+		boudata.addValue(plant, "Plant", "");
+		boudata.addValue(plantE, "PlantEater", "");
+		boudata.addValue(fleshE, "FleshEater", "");
+		boudata.addValue(omni, "omnivorous", "");
+		JFreeChart bouchart = ChartFactory.createBarChart("amount of Individual", "species", "num",
+				boudata, PlotOrientation.HORIZONTAL, true, false, false);
+		TextTitle bouTitle = bouchart.getTitle();
+		bouTitle.setPaint(new Color(255, 255, 240));
+		Plot bou_plot = bouchart.getPlot();
+		bou_plot.setBackgroundPaint(new Color(0, 0, 0, 0));
+		bouchart.setBackgroundPaint(new Color(0, 0, 0, 0));
+		// 棒プロット
+		CategoryPlot bplot = bouchart.getCategoryPlot();
+		BarRenderer bourenderer = (BarRenderer) bplot.getRenderer();
+		// 凡例
+		LegendTitle bousenlegend = bouchart.getLegend();
+		bousenlegend.setBackgroundPaint(new Color(0, 40, 90));
+		bousenlegend.setItemPaint(new Color(255, 255, 240));
+		// 線の色
+		bourenderer.setSeriesPaint(0, ChartColor.GREEN);
+		bourenderer.setSeriesPaint(1, ChartColor.pink);
+		bourenderer.setSeriesPaint(2, ChartColor.RED);
+		bourenderer.setSeriesPaint(3, ChartColor.GRAY);
+		// 棒パネル
+		bouP = new ChartPanel(bouchart);
+		bouP.setBackground(new Color(0, 40, 90));
+		bouP.setBounds(MainFrame.w / 3 - 320, MainFrame.h / 3+50 ,MainFrame.w / 3 - 360, MainFrame.h / 3 - 100);
+		
+	}
 }
+
 // 2秒毎に再描画メソッドを呼び出している
-class RepT  implements Runnable {
+class RepT implements Runnable {
 	public void run() {
 		while (true) {
 			try {
 				Thread.sleep(2000);
-				if (SecondFrame.category1 > 90) {
-					SecondFrame.category1 = 10;
-				}
-				SecondFrame.category1 += 10;
 				SecondFrame.resetChart();
 			} catch (InterruptedException e) {
 			}

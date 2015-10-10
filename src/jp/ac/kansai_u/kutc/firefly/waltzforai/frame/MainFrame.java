@@ -61,7 +61,7 @@ public class MainFrame extends JFrame{
 	    secondF.VisibleFlg(false);
 	}
 	// フレームの切り替え(消すフレーム，表示するフレーム)
-	// SecondFrameがJFrameを継承しなくなったので使わない
+	// SecondFrameがJFrameを継承しなくなったので使わない　visibleflgで遷移
 	/* public static void FrameChange(JFrame del_frame, JFrame cre_frame){
 			del_frame.setVisible(false);
 			cre_frame.setVisible(true);
