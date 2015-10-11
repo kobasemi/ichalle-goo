@@ -2,12 +2,17 @@ package jp.ac.kansai_u.kutc.firefly.waltzforai.frame;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.LinkedList;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
 import jp.ac.kansai_u.kutc.firefly.waltzforai.Display;
@@ -64,6 +69,21 @@ public class SecondFrame {
 		frame = new JFrame();
 		frame.setSize(MainFrame.w, MainFrame.h);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		// メニューバー
+		JMenuBar menubar = new JMenuBar();
+		JMenu menu1 = new JMenu("Menu");
+		menu1.setOpaque(false);
+		menubar.setBackground(Color.BLACK);
+		menubar.add(menu1);
+		JMenuItem menuitem1 = new JMenuItem("Close");
+		menuitem1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+		});
+		menu1.add(menuitem1);
+		frame.setJMenuBar(menubar);
 
 		layerPane = new JLayeredPane(); // 配置は重ねることができるが，色は重ねられないみたい
 		layerPane.setLayout(null);
@@ -392,8 +412,7 @@ class RepT implements Runnable {
 					}
 				}
 				// BGMが最後までなったら．
-				if(j%20 == 0){
-					System.out.println("ok");
+				if(j%11 == 0){
 					p.stop();
 					p.start(IncreaseRate.advantage);
 					j=1;

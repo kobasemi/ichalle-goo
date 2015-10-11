@@ -25,7 +25,6 @@ public class PlayBGM {
     	try{
        line.stop();
         line.close();
-        System.out.println("stop");
     	}catch(final Exception e) {
 			System.out.println(e);
 		}
