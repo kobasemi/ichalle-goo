@@ -118,13 +118,9 @@ public class Animal extends Entity {
 		display.fill(230, 230, 0, 20);
 		display.arc(x, y, sight*2, sight*2, (float)(direction-fov/2), (float)(direction+fov/2));
 		display.fill(r, g, b, 200);
-		// 謙隆add
-		display.omnivorousNum++;
 		if(edibility.equals(Edibility.Plant)){
 			// 草食動物
 			display.ellipse(x, y, size*2, size*2);
-			// 謙隆add
-			display.plantEaterNum++;
 		}else if(edibility.equals(Edibility.Flesh)){
 			// 肉食動物
 			display.beginShape();
@@ -133,8 +129,6 @@ public class Animal extends Entity {
 			display.vertex((float)(x+Math.cos(direction+Math.PI)*size), (float)(y+Math.sin(direction+Math.PI)*size));
 			display.vertex((float)(x+Math.cos(direction-Math.PI*2/3)*size), (float)(y+Math.sin(direction-Math.PI*2/3)*size));
 			display.endShape();
-			// 謙隆add
-			display.fleshEaterNum++;
 		}else{
 			// 雑食動物
 			display.beginShape();

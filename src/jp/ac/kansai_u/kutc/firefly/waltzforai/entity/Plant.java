@@ -30,8 +30,6 @@ public class Plant extends Entity {
 		display.noStroke();
 		display.fill(0, 200, 30, 200);
 		display.ellipse(x, y, size*2, size*2);
-		// 謙隆add
-		display.plantNum++;
 	}
 	
 	// 食べられた。ツリーとワールドから削除

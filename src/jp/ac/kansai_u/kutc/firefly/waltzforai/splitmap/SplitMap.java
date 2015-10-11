@@ -198,4 +198,7 @@ public class SplitMap {
 		n = (n|(n<<2)) & 0x33333333; 	// 00110011001100110011001100110011
 		return (n|(n<<1)) & 0x55555555;	// 01010101010101010101010101010101
 	}
+	
+	// ゲッタ
+	public int getSplitLevel(){ return splitLevel; }
 }

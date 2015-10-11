@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Animal;
+import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Edibility;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Entity;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Plant;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.gene.GeneManager;
@@ -29,12 +30,17 @@ public class World extends Thread{
 	private boolean suspended;				// 一時停止中か？
 	private boolean running;				// 実行中か？
 	
+	private int fleshEaterNum = 0;			// 各エンティティの数
+	private int plantEaterNum = 0;
+	private int omnivorousNum = 0;
+	private int plantNum = 0;
+	
 	public World(Display display, int width, int height){
 		this.display = display;
 		
 		this.width = width;
 		this.height = height;
-		splitMap = new SplitMap(this, 5);
+		splitMap = new SplitMap(this, 4);
 		geneManager = new GeneManager(this);
 		
 		entities = new ArrayList<Entity>();
@@ -141,11 +147,33 @@ public class World extends Thread{
 		}else{
 			splitMap.regist(new TreeBody(entity));
 		}
+		
+		// 種類に応じてカウント
+		if(entity instanceof Plant){
+			plantNum++;
+		}else{
+			switch(((Animal)entity).getEdibility()){
+			case Plant: plantEaterNum++; break;
+			case Flesh: fleshEaterNum++; break;
+			case Mixed: omnivorousNum++; break;
+			}
+		}
 	}
 	
 	// エンティティをワールドから削除
 	public void removeEntity(Entity entity){
 		entities.remove(entity);
+		
+		// 種類に応じてカウント
+		if(entity instanceof Plant){
+			plantNum--;
+		}else{
+			switch(((Animal)entity).getEdibility()){
+			case Plant: plantEaterNum--; break;
+			case Flesh: fleshEaterNum--; break;
+			case Mixed: omnivorousNum--; break;
+			}
+		}
 	}
 	
 	// フレーム毎に実行される更新メソッド (このクラスの肝)
@@ -260,4 +288,8 @@ public class World extends Thread{
 	public int getHeight(){ return height; }
 	public double getGameSpeed(){ return gameSpeed; }
 	public double getRealFPS(){ return realFPS; }
+	public int getPlantNum(){ return plantNum; }
+	public int getPlantEaterNum(){ return plantEaterNum; }
+	public int getFleshEaterNum(){ return fleshEaterNum; }
+	public int getOmnivorousNum(){ return omnivorousNum; }
 }
