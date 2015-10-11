@@ -2,8 +2,6 @@ package jp.ac.kansai_u.kutc.firefly.waltzforai.frame;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 import javax.swing.BoxLayout;
@@ -41,7 +39,6 @@ public class SecondFrame {
 	private static JPanel infoP;
 	private static JPanel titleP;
 	private static JPanel baseP;
-	private static JPanel LineP1;
 	public static int plant, fleshE, plantE, omni;
 	private static int sec = 2, secNum = 20;
 	public static JFreeChart oresen;
@@ -76,7 +73,7 @@ public class SecondFrame {
 		baseP = new JPanel();
 		baseP.setBackground(new Color(0, 40, 90));
 		baseP.setBounds(0, 0, MainFrame.w / 3, MainFrame.h);
-		
+
 		// ラインパネル
 		/*LineP1 = new JPanel();
 		LineP1.setBounds(0, MainFrame.h/8*3, MainFrame.w/3,MainFrame.h/8*3+10);
@@ -99,38 +96,45 @@ public class SecondFrame {
 		infoP.setLayout(new BoxLayout(infoP, BoxLayout.Y_AXIS)); // 縦に配置するレイアウト
 		infoP.setBackground(new Color(0, 0, 0, 0));
 		// 情報ラベル（BGM）
-		JLabel infoLabel = new JLabel("<html>　BGM<br><br><html>");
-		infoLabel.setFont(new Font("Century", Font.PLAIN, 24));
+		/*JLabel infoLabel = new JLabel("<html>　BGM<br><br><html>");
+		infoLabel.setFont(new Font("Century", Font.PLAIN, 34));
 		infoLabel.setForeground(new Color(255, 255, 240));
 		infoLabel.setBackground(new Color(1, 1, 1, 0));
+		*/
+		// 情報ラベル（BGM）
+		JLabel bgmLabel = new JLabel("　BGM ： natural");
+		bgmLabel.setFont(new Font("Century", Font.PLAIN, 30));
+		bgmLabel.setForeground(new Color(255, 255, 240));
+		bgmLabel.setBackground(new Color(1, 1, 1, 0));
 		// 情報ラベル（個体数)
 		JLabel numL = new JLabel("<html>　Number of individuals<br><html>");
 		numL.setFont(new Font("Century", Font.PLAIN, 30));
 		numL.setForeground(new Color(255, 255, 240));
 		// 情報ラベル（個体数　草)
-		JLabel grassL = new JLabel("　・plant:" + plant);
+		JLabel grassL = new JLabel("　・plant : " + plant);
 		grassL.setFont(new Font("Century", Font.PLAIN, 24));
 		grassL.setForeground(new Color(255, 255, 240));
 		// 情報ラベル（草食）
-		JLabel grassEatL = new JLabel("　・plant-eater:" + plantE);
+		JLabel grassEatL = new JLabel("　・plant-eater : " + plantE);
 		grassEatL.setFont(new Font("Century", Font.PLAIN, 24));
 		grassEatL.setForeground(new Color(255, 255, 240));
 		// 情報ラベル（肉食）
-		JLabel fleshEatL = new JLabel("　・flesh-eater:" + fleshE);
+		JLabel fleshEatL = new JLabel("　・flesh-eater : " + fleshE);
 		fleshEatL.setFont(new Font("Century", Font.PLAIN, 24));
 		fleshEatL.setForeground(new Color(255, 255, 240));
 		// 情報ラベル（雑食食）
-		JLabel omniL = new JLabel("　・omnivorous:" + omni);
+		JLabel omniL = new JLabel("　・omnivorous : " + omni);
 		omniL.setFont(new Font("Century", Font.PLAIN, 24));
 		omniL.setForeground(new Color(255, 255, 240));
 		// パネルにラベルを登録していく
-		infoP.add(infoLabel);
+		infoP.add(bgmLabel);
+		//infoP.add(infoLabel);
 		infoP.add(numL);
 		infoP.add(grassL);
 		infoP.add(grassEatL);
 		infoP.add(fleshEatL);
 		infoP.add(omniL);
-		
+
 		// 折れ線グラフ
 		DefaultCategoryDataset data2 = new DefaultCategoryDataset();
 		for (int i = 0; i < 10; i++) {
@@ -155,12 +159,12 @@ public class SecondFrame {
 		oresenP.setBackground(new Color(0, 0, 0, 10));
 		oresenP.setBounds(50, (MainFrame.h - MainFrame.h / 3),
 				MainFrame.w / 3 - 100, MainFrame.h / 3 - 50);
-		
+
 		oresendraw();
 		// Processingパネル
 		processing = new Display(mf);
 		processing.init();
-		 
+
 		// 円グラフ描画
 		piedraw();
 		// 棒グラフ
@@ -205,45 +209,52 @@ public class SecondFrame {
 		infoP.setLayout(new BoxLayout(infoP, BoxLayout.Y_AXIS)); // 縦に配置するレイアウト
 		infoP.setBackground(new Color(0, 40, 90));
 		// 情報ラベル（BGM）
-		JLabel infoLabel = new JLabel("<html>　BGM<br><br><html>");
-		infoLabel.setFont(new Font("Century", Font.PLAIN, 24));
+		/*JLabel infoLabel = new JLabel("<html>　BGM<br><br><html>");
+		infoLabel.setFont(new Font("Century", Font.PLAIN, 30));
 		infoLabel.setForeground(new Color(255, 255, 240));
 		infoLabel.setBackground(new Color(1, 1, 1, 0));
+		*/
+		// 情報ラベル（BGM）
+		JLabel bgmLabel = new JLabel("　BGM ： "+IncreaseRate.advantage);
+		bgmLabel.setFont(new Font("Century", Font.PLAIN, 30));
+		bgmLabel.setForeground(new Color(255, 255, 240));
+		bgmLabel.setBackground(new Color(1, 1, 1, 0));
 		// 情報ラベル（個体数)
 		JLabel numL = new JLabel("<html>　Number of individuals<br><html>");
 		numL.setFont(new Font("Century", Font.PLAIN, 30));
 		numL.setForeground(new Color(255, 255, 240));
 		// 情報ラベル（個体数　草)
-		JLabel grassL = new JLabel("　・plant:" + plant);
+		JLabel grassL = new JLabel("　・plant : " + plant);
 		grassL.setFont(new Font("Century", Font.PLAIN, 24));
 		grassL.setForeground(new Color(255, 255, 240));
 		// 情報ラベル（草食）
-		JLabel grassEatL = new JLabel("　・plant-eater:" + plantE);
+		JLabel grassEatL = new JLabel("　・plant-eater : " + plantE);
 		grassEatL.setFont(new Font("Century", Font.PLAIN, 24));
 		grassEatL.setForeground(new Color(255, 255, 240));
 		// 情報ラベル（草食）
-		JLabel fleshEatL = new JLabel("　・flesh-eater:" + fleshE);
+		JLabel fleshEatL = new JLabel("　・flesh-eater : " + fleshE);
 		fleshEatL.setFont(new Font("Century", Font.PLAIN, 24));
 		fleshEatL.setForeground(new Color(255, 255, 240));
 		// 情報ラベル（雑食食）
-		JLabel omniL = new JLabel("　・omnivorous:" + omni);
+		JLabel omniL = new JLabel("　・omnivorous : " + omni);
 		omniL.setFont(new Font("Century", Font.PLAIN, 24));
 		omniL.setForeground(new Color(255, 255, 240));
 		// パネルにラベルを登録していく
-		infoP.add(infoLabel);
+		//infoP.add(infoLabel);
+		infoP.add(bgmLabel);
 		infoP.add(numL);
 		infoP.add(grassL);
 		infoP.add(grassEatL);
 		infoP.add(fleshEatL);
 		infoP.add(omniL);
-		
+
 		// 折れ線グラフ
 		oresendraw();
 		// 円グラフ
 		piedraw();
 		// 棒グラフ
 		boudraw();
-		
+
 		// パネルに戻す
 		layerPane.add(infoP);
 		layerPane.add(chartP);
@@ -274,7 +285,6 @@ public class SecondFrame {
 		oresenTitle.setPaint(new Color(255, 255, 240));
 		Plot oresen_plot = oresen.getPlot();
 		oresen_plot.setBackgroundPaint(new Color(0, 0, 0, 0));
-		//oresen_plot.setBackgroundAlpha(0.3f);
 		oresen.setBackgroundPaint(new Color(0, 0, 0, 0));
 		// 線の色
 		oresen_plot.setOutlinePaint(Color.white);
@@ -295,7 +305,7 @@ public class SecondFrame {
 		renderer.setSeriesPaint(2, ChartColor.RED);
 		renderer.setSeriesPaint(3, ChartColor.GRAY);
 	}
-	
+
 	public static void piedraw() {
 		// 円グラフ再設定
 		DefaultPieDataset data = new DefaultPieDataset();
@@ -322,7 +332,7 @@ public class SecondFrame {
 		chartP = new ChartPanel(chart);
 		chartP.setBackground(new Color(0, 40, 90));
 		chart.setBackgroundPaint(new Color(0, 0, 0, 0));
-		chartP.setBounds(30, MainFrame.h / 3 + 50, MainFrame.w / 3 - 370,
+		chartP.setBounds(0, MainFrame.h / 3 + 50, MainFrame.w/6,
 				MainFrame.h / 3 - 100);
 	}
 
@@ -356,19 +366,45 @@ public class SecondFrame {
 		// 棒パネル
 		bouP = new ChartPanel(bouchart);
 		bouP.setBackground(new Color(0, 40, 90));
-		bouP.setBounds(MainFrame.w / 3 - 320, MainFrame.h / 3+50 ,MainFrame.w / 3 - 360, MainFrame.h / 3 - 100);
-		
+		bouP.setBounds(MainFrame.w/6 , MainFrame.h / 3+50 ,MainFrame.w/6, MainFrame.h / 3 - 100);
 	}
 }
 
-// 2秒毎に再描画メソッドを呼び出している
+// 2秒毎に再描画メソッドを呼び出す
 class RepT implements Runnable {
 	public void run() {
+		// 初期の音楽を鳴らす
+		String premusic = "natural";
+		int i=1, j=1;
+		PlayBGM p = new PlayBGM();
+		p.start("natural");
 		while (true) {
 			try {
+				// 10秒間の増加率を調べ，最も増加の多い音楽に切り替える
+				if(i%5 == 0){
+					IncreaseRate.renew(); //増加率を更新
+					if(IncreaseRate.advantage.equals(premusic)){
+						j++;
+					}else{
+						p.stop();
+						p.start(IncreaseRate.advantage);
+						premusic = IncreaseRate.advantage;
+					}
+				}
+				// BGMが最後までなったら．
+				if(j%20 == 0){
+					System.out.println("ok");
+					p.stop();
+					p.start(IncreaseRate.advantage);
+					j=1;
+				}
+				i++;
 				Thread.sleep(2000);
 				SecondFrame.resetChart();
 			} catch (InterruptedException e) {
+			} catch (Exception e) {
+				// TODO 自動生成された catch ブロック
+				e.printStackTrace();
 			}
 		}
 	}

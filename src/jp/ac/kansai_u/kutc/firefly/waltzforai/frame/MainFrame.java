@@ -6,7 +6,16 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -41,6 +50,9 @@ public class MainFrame extends JFrame{
 	    		//FrameChange(firstF, secondF);
 	    		firstF.setVisible(false);
 	    		secondF.VisibleFlg(true);  // SecondFrameで実装したメソッド
+	    		// スレッドで音楽を鳴らす
+	    		//ExThread1 thread1 = new ExThread1();
+	    		//thread1.start();
 	    	}
 	    });
 	    btn.setBounds(w/2-50, h-h/3, 100, 50);
@@ -74,5 +86,42 @@ class FstFrame extends JFrame{
 	    setSize(MainFrame.w, MainFrame.h);
 	    setDefaultCloseOperation(EXIT_ON_CLOSE);
 	    setLayout(null);
+	}
+}
+
+class ExThread1 extends Thread {
+	public void run() {
+		File soundFile = new File("./Forest.wav");
+		AudioInputStream audioStream = null;
+		try {
+			audioStream = AudioSystem.getAudioInputStream(soundFile);
+		} catch (UnsupportedAudioFileException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+		AudioFormat format = audioStream.getFormat();
+		DataLine.Info info = new DataLine.Info(Clip.class, format);
+		Clip line = null;
+		try {
+			line = (Clip) AudioSystem.getLine(info);
+		} catch (LineUnavailableException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+		try {
+			line.open(audioStream);
+		} catch (LineUnavailableException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+		line.start();
+		line.drain();
+		line.close();
 	}
 }
