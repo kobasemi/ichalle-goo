@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Animal;
-import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Edibility;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Entity;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Plant;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.gene.GeneManager;
@@ -40,11 +39,11 @@ public class World extends Thread{
 		
 		this.width = width;
 		this.height = height;
-		splitMap = new SplitMap(this, 4);
+		splitMap = new SplitMap(this, 5);
 		geneManager = new GeneManager(this);
 		
 		entities = new ArrayList<Entity>();
-		energy = 10000000;
+		energy = 100000000;
 		randomCreateEntity(energy);
 		display.setEntityList(new ArrayList<Entity>(entities));
 		
@@ -183,8 +182,10 @@ public class World extends Thread{
 		// コピーしたリストをディスプレイにセット
 		display.setEntityList(updateList);
 		
+		long allTime = System.nanoTime();
 		// 当たりそうなエンティティの検出
 		splitMap.allCheckNearEntity();
+		long smTime = System.nanoTime() - allTime;
 		
 		// 全てのエンティティの状態を更新
 		for(int i = 0; i < updateList.size(); i++){
@@ -195,6 +196,15 @@ public class World extends Thread{
 		for(int i = 0; i < updateList.size(); i++){
 			updateList.get(i).move();
 		}
+		
+		allTime = System.nanoTime() - allTime;
+		
+		System.out.format("fps %.5f\n", 1000000000.0 / allTime);
+		System.out.format("sm %.5f\n", smTime / (double)allTime);
+		System.out.format("gh %.5f\n", Animal.timeB / (double)allTime);
+		System.out.format("mv %.5f\n\n", Animal.timeC / (double)allTime);
+		
+		Animal.timeB = Animal.timeC = 0;
 		
 		// 計算にかかったFPSを算出
 		double timeSum = 0;

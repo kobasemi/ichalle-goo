@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jp.ac.kansai_u.kutc.firefly.waltzforai.Display;
-import jp.ac.kansai_u.kutc.firefly.waltzforai.Util;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.World;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.gene.GeneNode;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.splitmap.SplitMap;
@@ -33,11 +32,13 @@ public class Animal extends Entity {
 	private double childTime;				// 子供を作ってから経過した時間
 
 	// 近接エンティティに関するリスト
-	private List<Entity> nearEntities;		// 近接エンティティリスト
 	private List<Entity> inSightPreys;		// 視界内捕食可能エンティティリスト
 	private List<Animal> inSightFriends;	// 視界内友好エンティティリスト
 	private List<Animal> inSightEnemies;	// 視界内敵エンティティリスト
 
+	public static long timeB = 0;
+	public static long timeC = 0;
+	
 	// クラスビルダー
 	public static class Builder{
 		private World world;
@@ -102,7 +103,6 @@ public class Animal extends Entity {
 		this.lifeSpan = b.lifeSpan;
 		this.r = b.r; this.g = b.g; this.b = b.b;
 		this.cost = b.cost;
-		this.nearEntities = new ArrayList<Entity>();
 		this.inSightPreys = new ArrayList<Entity>();
 		this.inSightFriends = new ArrayList<Animal>();
 		this.inSightEnemies = new ArrayList<Animal>();
@@ -150,40 +150,28 @@ public class Animal extends Entity {
 		if(!isAlive()){
 			return;
 		}
-		collisionCheck();					// 衝突判定
+		long time = System.nanoTime();
 		geneHead.perform(this);				// 行動ツリーの実行	
+		timeB += System.nanoTime() - time;
+		
 		age += world.getGameSpeed();
 		childTime += world.getGameSpeed();	// 経過時間に加算
 		if(lifeSpan < age){
 			world.returnAllEnergy(this);
 		}
 	}
-
-	// 衝突判定
-	protected void collisionCheck(){
-		for(int i = 0; i < nearEntities.size(); i++){
-			Entity entity = nearEntities.get(i);
-			if(entity.equals(this) || !entity.isAlive() || (edibility.equals(Edibility.Flesh) && entity instanceof Plant)){
-				continue;
-			}
-			if(Util.isCollided(this, entity)){									// 衝突しているか？
-				if(world.getGeneManager().isFriend(this, entity)){
-					world.getGeneManager().crossEntities(this, (Animal)entity);
-				}else if(world.getGeneManager().isEdible(this, entity)){		// 捕食可能か？
-					eat(entity);
-				}
-			}else{
-				if(Util.inSight(this, entity)){			// 視界内にいるか？
-					assortInSightEntity(entity);
-				}
-			}
+	
+	// 衝突
+	private void collide(Entity entity) {
+		if(world.getGeneManager().isFriend(this, entity)){
+			world.getGeneManager().crossEntities(this, (Animal)entity);
+		}else if(world.getGeneManager().isEdible(this, entity)){		// 捕食可能か？
+			eat(entity);
 		}
-
-		clearNearEntity(); // 近接エンティティリストをクリア
 	}
-
-	// 視界内のエンティティを仕分ける
-	private void assortInSightEntity(Entity entity){
+	
+	// 視界内
+	private void inSight(Entity entity) {
 		if(entity instanceof Plant){
 			inSightPreys.add(entity);
 		}else{
@@ -198,6 +186,82 @@ public class Animal extends Entity {
 			}
 		}
 	}
+	
+	// エンティティとの位置関係を調べる
+	public void collisionCheck(Entity e){
+		if((edibility.equals(Edibility.Flesh) && e instanceof Plant) || e.equals(this) || !e.isAlive()){
+			return;
+		}
+		
+		// 主体と客体の距離が(主体の視界半径+客体の大きさの半径)より大きい場合
+	    float dx = e.getX() - x;
+	    float dy = e.getY() - y;
+	    double distSpr = dx*dx + dy*dy;
+		double sar = sight + e.getSize();	// 主体の視界半径+客体の大きさの半径
+		double dar = size + e.getSize();	// 主体の大きさ半径+客体の大きさの半径
+		
+		if(distSpr > sar*sar){
+			return;
+		}
+		
+		if(distSpr < dar*dar){
+			// 衝突
+			collide(e);
+			return;
+		}
+		
+		// 客体の座標が主体の視野の扇形の2ベクトル間にある場合
+		double v1Rad = direction + fov/2;	// 扇形の1つめのベクトルの角度(ラジアン)
+		double v1x = sight * Math.cos(v1Rad);
+		double v1y = sight * Math.sin(v1Rad);
+		double v2Rad = v1Rad - fov;					// 扇形の2つめのベクトルの角度(ラジアン)
+		double v2x = sight * Math.cos(v2Rad);
+		double v2y = sight * Math.sin(v2Rad);
+		double delta = v1x*v2y - v2x*v1y;
+		double alpha = (dx*v2y - dy*v2x) / delta;
+		double beta = (-dx*v1y + dy*v1x) / delta;
+		if(alpha >= 0.0 && beta >= 0.0){	// 2ベクトルのなす角度が180度を超えると判定が逆転する
+			if(fov < Math.PI){
+				// 視界内
+				inSight(e);
+				return;
+			}
+		}else{
+			if(Math.PI < fov){
+				inSight(e);
+				return;
+			}
+		}
+
+		//主体の視界である扇形の2つのベクトル線分のいずれかと客体が交点を持つ場合
+		double a = v1x*v1x + v1y*v1y;
+		double b = -(v1x*dx + v1y*dy);
+		double c = dx*dx + dy*dy - e.getSize()*e.getSize();
+		double d = b*b - a*c;	// 判別式D
+		if(d >= 0.0){
+			double t = (-b - Math.sqrt(d) / a);
+			if(t >= 0.0 && t <= 1.0){
+				inSight(e);
+				return;
+			}
+		}
+		a = v2x*v2x + v2y*v2y;
+		b = -(v2x*dx + v2y*dy);
+		d = b*b - a*c;
+		if(d >= 0.0){
+			double t = (-b - Math.sqrt(d) / a);
+			if(t >= 0.0 && t <= 1.0){
+				inSight(e);
+				return;
+			}
+		}
+
+		// 主体の座標が客体の内部にある場合
+		if(distSpr < e.getSize()*e.getSize()){
+			inSight(e);
+			return;
+		}
+	}
 
 	// 1フレーム分の移動
 	@Override
@@ -205,6 +269,7 @@ public class Animal extends Entity {
 		if(!isAlive()){
 			return;
 		}
+		long time = System.nanoTime();
 		
 		double vecX = Math.cos(direction)*speed*walkPace*world.getGameSpeed();
 		double vecY = Math.sin(direction)*speed*walkPace*world.getGameSpeed();
@@ -235,6 +300,8 @@ public class Animal extends Entity {
 
 		reregist();	// 空間ツリーへの再登録
 		clearInSightEntity(); // エンティティリストのクリア
+		
+		timeC += System.nanoTime() - time;
 	}
 
 	// 捕食
@@ -260,16 +327,6 @@ public class Animal extends Entity {
 		SplitMap sm = world.getSplitMap();
 		sm.regist(treeBody);
 		sm.regist(treeSight);
-	}
-
-	// 近接エンティティリストへの追加
-	public void addNearEntity(Entity entity){
-		nearEntities.add(entity);
-	}
-
-	// 近接エンティティリストのクリア
-	protected void clearNearEntity(){
-		nearEntities.clear();
 	}
 
 	// 視界内エンティティリストのクリア
@@ -317,7 +374,6 @@ public class Animal extends Entity {
 	public float getG(){ return g; }
 	public float getB(){ return b; }
 	public double getCost(){ return cost; }
-	public List<Entity> getNearEntities() { return nearEntities; }
 	public List<Entity> getInSightPreys() { return inSightPreys; }
 	public List<Animal> getInSightFriends() { return inSightFriends; }
 	public List<Animal> getInSightEnemies() { return inSightEnemies; }

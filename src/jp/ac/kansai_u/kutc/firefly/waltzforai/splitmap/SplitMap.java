@@ -58,12 +58,12 @@ public class SplitMap {
 			TreeBody oObj = spaceTree[elem].getEntityHead();
 			while(oObj != null){
 				// 主体エンティティの近接オブジェクトリストに近接オブジェクトリストを追加する
-				sObj.getEntity().addNearEntity(oObj.getEntity());
+				sObj.getEntity().collisionCheck(oObj.getEntity());
 				oObj = oObj.getNext();
 			}
 			// 客体スタックとの近接オブジェクトリスト作成
 			for(int i = 0; i < oStack.size(); i++){
-				sObj.getEntity().addNearEntity(oStack.get(i));
+				sObj.getEntity().collisionCheck(oStack.get(i));
 			}
 			sObj = sObj.getNext();
 		}
@@ -73,7 +73,7 @@ public class SplitMap {
 			TreeBody oObj = spaceTree[elem].getEntityHead();
 			while(oObj != null){
 				// 近接オブジェクトリストに客体オブジェクトを追加する
-				sStack.get(i).addNearEntity(oObj.getEntity());
+				sStack.get(i).collisionCheck(oObj.getEntity());
 				oObj = oObj.getNext();
 			}
 		}

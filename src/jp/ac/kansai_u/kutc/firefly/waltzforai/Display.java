@@ -18,16 +18,22 @@ public class Display extends PApplet{
 	private PVector basePos; 		// 現在の描画範囲
 
 	public Display(MainFrame mainFrame){
+	//public Display(){
 		this.mainFrame = mainFrame;
-		world = new World(this, 800, 600);
+		world = new World(this, 8000, 6000);
 		world.start();
 
 		basePos = new PVector();
 	}
+	
+	/*public static void main(String args[]){
+		PApplet.main(new String[] { "--present", "jp.ac.kansai_u.kutc.firefly.waltzforai.Display" });
+	}*/
 
 	@Override
 	public void setup(){
 		setBounds(MainFrame.w/3, 0, (MainFrame.w - (MainFrame.w / 3)), MainFrame.h);
+		//size(displayWidth, displayHeight);
 	}
 
 	@Override
