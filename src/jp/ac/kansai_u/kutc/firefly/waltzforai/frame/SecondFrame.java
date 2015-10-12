@@ -1,5 +1,6 @@
 package jp.ac.kansai_u.kutc.firefly.waltzforai.frame;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -158,7 +159,7 @@ public class SecondFrame {
 		// 折れ線グラフ
 		DefaultCategoryDataset data2 = new DefaultCategoryDataset();
 		for (int i = 0; i < 10; i++) {
-			data2.addValue(plantList.get(i), seriesName[0], time.get(i));
+			//data2.addValue(plantList.get(i), seriesName[0], time.get(i));
 			data2.addValue(plantEList.get(i), seriesName[1], time.get(i));
 			data2.addValue(fleshEList.get(i), seriesName[2], time.get(i));
 			data2.addValue(omniList.get(i), seriesName[3], time.get(i));
@@ -222,18 +223,11 @@ public class SecondFrame {
 		layerPane.remove(oresenP);
 		layerPane.remove(infoP);
 		layerPane.remove(bouP);
-
 		// 情報パネル
 		infoP = new JPanel();
 		infoP.setBounds(0, MainFrame.h / 8, MainFrame.w / 3, MainFrame.h/8*2);
 		infoP.setLayout(new BoxLayout(infoP, BoxLayout.Y_AXIS)); // 縦に配置するレイアウト
 		infoP.setBackground(new Color(0, 40, 90));
-		// 情報ラベル（BGM）
-		/*JLabel infoLabel = new JLabel("<html>　BGM<br><br><html>");
-		infoLabel.setFont(new Font("Century", Font.PLAIN, 30));
-		infoLabel.setForeground(new Color(255, 255, 240));
-		infoLabel.setBackground(new Color(1, 1, 1, 0));
-		*/
 		// 情報ラベル（BGM）
 		JLabel bgmLabel = new JLabel("　BGM ： "+IncreaseRate.advantage);
 		bgmLabel.setFont(new Font("Century", Font.PLAIN, 30));
@@ -267,14 +261,11 @@ public class SecondFrame {
 		infoP.add(grassEatL);
 		infoP.add(fleshEatL);
 		infoP.add(omniL);
-
-		// 折れ線グラフ
-		oresendraw();
-		// 円グラフ
-		piedraw();
-		// 棒グラフ
-		boudraw();
-
+		
+		oresendraw();// 折れ線グラフ描画
+		piedraw();// 円グラフ
+		boudraw();// 棒グラフ
+		
 		// パネルに戻す
 		layerPane.add(infoP);
 		layerPane.add(chartP);
@@ -293,7 +284,7 @@ public class SecondFrame {
 		omniList.remove(0);omniList.add(omni);
 		time.remove(0);secNum = secNum + sec;time.add(String.valueOf(secNum));
 		for (int i = 0; i < 10; i++) {
-			data2.addValue(plantList.get(i), seriesName[0], time.get(i));
+			//data2.addValue(plantList.get(i), seriesName[0], time.get(i));
 			data2.addValue(plantEList.get(i), seriesName[1], time.get(i));
 			data2.addValue(fleshEList.get(i), seriesName[2], time.get(i));
 			data2.addValue(omniList.get(i), seriesName[3], time.get(i));
@@ -315,21 +306,28 @@ public class SecondFrame {
 				MainFrame.h / 3 - 50);
 		CategoryPlot plot = oresen.getCategoryPlot();
 		LineAndShapeRenderer renderer = (LineAndShapeRenderer) plot.getRenderer();
+		
+		     // シリーズの設定
+		     for (int i = 0; i < data2.getRowCount(); i++) {
+		         renderer.setSeriesStroke(i, new BasicStroke(3));
+		         renderer.setSeriesShapesVisible(i, true);
+		     }
+
+		 
 		// 凡例
 		LegendTitle senlegend = oresen.getLegend();
 		senlegend.setBackgroundPaint(new Color(0, 40, 90));
 		senlegend.setItemPaint(new Color(255, 255, 240));
 		// 線の色
 		renderer.setSeriesPaint(0, ChartColor.GREEN);
-		renderer.setSeriesPaint(1, ChartColor.pink);
-		renderer.setSeriesPaint(2, ChartColor.RED);
-		renderer.setSeriesPaint(3, ChartColor.GRAY);
+		renderer.setSeriesPaint(1, ChartColor.RED);
+		renderer.setSeriesPaint(2, ChartColor.GRAY);
 	}
 
 	public static void piedraw() {
 		// 円グラフ再設定
 		DefaultPieDataset data = new DefaultPieDataset();
-		data.setValue("plant", plant);
+		//data.setValue("plant", plant);
 		data.setValue("plantEater", plantE);
 		data.setValue("fleshEater", fleshE);
 		data.setValue("omnivorous", omni);
@@ -341,8 +339,8 @@ public class SecondFrame {
 		chart_plot.setBackgroundPaint(new Color(0, 0, 0, 0));
 		// 円グラフのセクションの色を設定する
 		RingPlot piePlot = (RingPlot) chart.getPlot();
-		piePlot.setSectionPaint("plant", Color.GREEN);
-		piePlot.setSectionPaint("plantEater", Color.PINK);
+		//piePlot.setSectionPaint("plant", Color.GREEN);
+		piePlot.setSectionPaint("plantEater", Color.GREEN);
 		piePlot.setSectionPaint("fleshEater", Color.RED);
 		piePlot.setSectionPaint("omnivorous", Color.GRAY);
 		// 凡例
@@ -360,7 +358,7 @@ public class SecondFrame {
 	public static void boudraw(){
 		// 棒グラフ
 		DefaultCategoryDataset boudata = new DefaultCategoryDataset();
-		boudata.addValue(plant, "Plant", "");
+		//boudata.addValue(plant, "Plant", "");
 		boudata.addValue(plantE, "PlantEater", "");
 		boudata.addValue(fleshE, "FleshEater", "");
 		boudata.addValue(omni, "omnivorous", "");
@@ -380,9 +378,8 @@ public class SecondFrame {
 		bousenlegend.setItemPaint(new Color(255, 255, 240));
 		// 線の色
 		bourenderer.setSeriesPaint(0, ChartColor.GREEN);
-		bourenderer.setSeriesPaint(1, ChartColor.pink);
-		bourenderer.setSeriesPaint(2, ChartColor.RED);
-		bourenderer.setSeriesPaint(3, ChartColor.GRAY);
+		bourenderer.setSeriesPaint(1, ChartColor.RED);
+		bourenderer.setSeriesPaint(2, ChartColor.GRAY);
 		// 棒パネル
 		bouP = new ChartPanel(bouchart);
 		bouP.setBackground(new Color(0, 40, 90));
@@ -394,10 +391,10 @@ public class SecondFrame {
 class RepT implements Runnable {
 	public void run() {
 		// 初期の音楽を鳴らす
-		String premusic = "natural";
+		String premusic = "plant";
 		int i=1, j=1;
 		PlayBGM p = new PlayBGM();
-		p.start("natural");
+		p.start(premusic);
 		while (true) {
 			try {
 				// 20秒間の増加率を調べ，最も増加の多い音楽に切り替える

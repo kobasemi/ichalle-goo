@@ -10,8 +10,8 @@ public class IncreaseRate {
 	public static int incleaseplantE;
 	public static int incleasefleshE;
 	public static int incleaseomni;
-	public static String advantage = "natural";
-	public static String prebgm = "natural";
+	public static String advantage = "plant";
+	public static String prebgm = "plant";
 
 	public static void renew() {
 		int plantNum = SecondFrame.plant;
@@ -45,7 +45,7 @@ public class IncreaseRate {
 		prefleshENum = fleshENum;
 		preomniNum = omniNum;
 
-		String[] speices = {"natural", "affectionate", "aggrasive", "active"};
+		String[] speices = {"plant", "plant-eater", "flesh-eater", "omnivorous"};
 		String maxSeries = speices[0];
 		int[] series = { incleaseplant, incleaseplantE, incleasefleshE,
 				incleaseomni }; // 配列を作成
