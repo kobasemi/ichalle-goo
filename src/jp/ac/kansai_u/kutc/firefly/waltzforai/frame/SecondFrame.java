@@ -69,7 +69,7 @@ public class SecondFrame {
 		frame = new JFrame();
 		frame.setSize(MainFrame.w, MainFrame.h);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+
 		// メニューバー
 		JMenuBar menubar = new JMenuBar();
 		JMenu menu1 = new JMenu("Menu");
@@ -299,7 +299,7 @@ public class SecondFrame {
 			data2.addValue(omniList.get(i), seriesName[3], time.get(i));
 		}
 		JFreeChart oresen = ChartFactory.createLineChart(
-				"Transition of Individuals", "time(sec)", "Number", data2,
+				"The Transition of Individuals", "time(sec)", "Number", data2,
 				PlotOrientation.VERTICAL, true, false, false);
 		TextTitle oresenTitle = oresen.getTitle();
 		oresenTitle.setPaint(new Color(255, 255, 240));
@@ -334,7 +334,7 @@ public class SecondFrame {
 		data.setValue("fleshEater", fleshE);
 		data.setValue("omnivorous", omni);
 		JFreeChart chart = ChartFactory.createRingChart(
-				"Percentage of Individuals", data, true, true, false);
+				"The proportion of individuals", data, true, true, false);
 		TextTitle pieTitle = chart.getTitle();
 		pieTitle.setPaint(new Color(255, 255, 240));
 		RingPlot chart_plot = (RingPlot) chart.getPlot();
@@ -364,7 +364,7 @@ public class SecondFrame {
 		boudata.addValue(plantE, "PlantEater", "");
 		boudata.addValue(fleshE, "FleshEater", "");
 		boudata.addValue(omni, "omnivorous", "");
-		JFreeChart bouchart = ChartFactory.createBarChart("amount of Individual", "species", "num",
+		JFreeChart bouchart = ChartFactory.createBarChart("The number of Individuals", "species", "num",
 				boudata, PlotOrientation.HORIZONTAL, true, false, false);
 		TextTitle bouTitle = bouchart.getTitle();
 		bouTitle.setPaint(new Color(255, 255, 240));
@@ -400,8 +400,8 @@ class RepT implements Runnable {
 		p.start("natural");
 		while (true) {
 			try {
-				// 10秒間の増加率を調べ，最も増加の多い音楽に切り替える
-				if(i%5 == 0){
+				// 20秒間の増加率を調べ，最も増加の多い音楽に切り替える
+				if(i%10 == 0){
 					IncreaseRate.renew(); //増加率を更新
 					if(IncreaseRate.advantage.equals(premusic)){
 						j++;
@@ -412,7 +412,7 @@ class RepT implements Runnable {
 					}
 				}
 				// BGMが最後までなったら．
-				if(j%11 == 0){
+				if(j%5 == 0){
 					p.stop();
 					p.start(IncreaseRate.advantage);
 					j=1;
