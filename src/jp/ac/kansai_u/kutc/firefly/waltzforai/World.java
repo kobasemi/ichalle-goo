@@ -43,7 +43,7 @@ public class World extends Thread{
 		geneManager = new GeneManager(this);
 		
 		entities = new ArrayList<Entity>();
-		energy = 1000000000;
+		energy = 100000000;
 		randomCreateEntity(energy);
 		display.setEntityList(new ArrayList<Entity>(entities));
 		
@@ -182,10 +182,8 @@ public class World extends Thread{
 	
 	// フレーム毎に実行される更新メソッド (このクラスの肝)
 	private void update(){
-		long allTime = System.nanoTime();
 		// 衝突判定
 		splitMap.allEntityCollisionCheck();
-		long smTime = System.nanoTime() - allTime;
 		
 		// エンティティリストをコピー
 		List<Entity> updateList = new ArrayList<Entity>(entities);
@@ -201,15 +199,6 @@ public class World extends Thread{
 		for(int i = 0; i < updateList.size(); i++){
 			updateList.get(i).move();
 		}
-		
-		allTime = System.nanoTime() - allTime;
-		
-		System.out.format("fps %.5f\n", 1000000000.0 / allTime);
-		System.out.format("sm %.5f\n", smTime / (double)allTime);
-		System.out.format("gh %.5f\n", Animal.timeB / (double)allTime);
-		System.out.format("mv %.5f\n\n", Animal.timeC / (double)allTime);
-		
-		Animal.timeB = Animal.timeC = 0;
 		
 		// 計算にかかったFPSを算出
 		double timeSum = 0;
@@ -272,8 +261,8 @@ public class World extends Thread{
 	}
 	
 	// ゲームスピードへの加算
-	public void addGameSpeed(int add){
-		gameSpeed = gameSpeed+add < 0 ? 0 : gameSpeed+add;
+	public void addGameSpeed(double d){
+		gameSpeed = gameSpeed+d < 0 ? 0 : gameSpeed+d;
 	}
 	
 	// FPS制限への加算
@@ -307,4 +296,5 @@ public class World extends Thread{
 	public int getPlantEaterNum(){ return plantEaterNum; }
 	public int getFleshEaterNum(){ return fleshEaterNum; }
 	public int getOmnivorousNum(){ return omnivorousNum; }
+	public boolean isSuspended(){ return suspended; }
 }

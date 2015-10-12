@@ -1,8 +1,5 @@
 package jp.ac.kansai_u.kutc.firefly.waltzforai;
 
-import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Animal;
-import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Entity;
-
 // ユーティリティークラス
 // このクラスのメソッドはstaticで作成すること
 public class Util {

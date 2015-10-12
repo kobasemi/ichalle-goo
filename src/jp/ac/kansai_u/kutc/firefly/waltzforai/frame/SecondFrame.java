@@ -183,7 +183,7 @@ public class SecondFrame {
 
 		oresendraw();
 		// Processingパネル
-		processing = new Display(mf);
+		processing = new Display();
 		processing.init();
 
 		// 円グラフ描画

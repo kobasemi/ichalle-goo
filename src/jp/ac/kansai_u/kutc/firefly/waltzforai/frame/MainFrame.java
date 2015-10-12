@@ -53,6 +53,9 @@ public class MainFrame extends JFrame{
 	    		// スレッドで音楽を鳴らす
 	    		//ExThread1 thread1 = new ExThread1();
 	    		//thread1.start();
+	    		
+	    		// スタートボタンを押したタイミングでワールドを動かし始める by kosuke
+	    		secondF.processing.startWorld();
 	    	}
 	    });
 	    btn.setBounds(w/2-50, h-h/3, 100, 50);

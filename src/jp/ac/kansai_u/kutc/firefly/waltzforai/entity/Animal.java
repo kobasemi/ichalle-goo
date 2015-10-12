@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import jp.ac.kansai_u.kutc.firefly.waltzforai.Display;
+import jp.ac.kansai_u.kutc.firefly.waltzforai.Util;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.World;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.gene.GeneNode;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.splitmap.SplitMap;
@@ -37,9 +38,6 @@ public class Animal extends Entity {
 	private List<Animal> inSightFriends;	// 視界内友好エンティティリスト
 	private List<Animal> inSightEnemies;	// 視界内敵エンティティリスト
 
-	public static long timeB = 0;
-	public static long timeC = 0;
-	
 	// クラスビルダー
 	public static class Builder{
 		private World world;
@@ -147,17 +145,18 @@ public class Animal extends Entity {
 	// 1フレーム毎に実行される更新メソッド
 	@Override
 	public void update() {
-		long time = System.nanoTime();
 		geneHead.perform(this);				// 行動ツリーの実行	
-		timeB += System.nanoTime() - time;
 	}
 	
 	// 衝突
 	private void collide(Entity entity) {
 		if(world.getGeneManager().isFriend(this, entity)){
 			world.getGeneManager().crossEntities(this, (Animal)entity);
+			direction = Util.getRadian(entity.getX(), entity.getY(), x, y);
 		}else if(world.getGeneManager().isEdible(this, entity)){		// 捕食可能か？
 			eat(entity);
+		}else{
+			direction = Util.getRadian(entity.getX(), entity.getY(), x, y);
 		}
 	}
 	
@@ -247,18 +246,17 @@ public class Animal extends Entity {
 			}
 		}
 
-		// 主体の座標が客体の内部にある場合
+		// 衝突してる場合はここまでプログラムが進まない
+		/*// 主体の座標が客体の内部にある場合
 		if(distSpr < e.getSize()*e.getSize()){
 			inSight(e);
 			return;
-		}
+		}*/
 	}
 
 	// 1フレーム分の移動
 	@Override
 	public void move(){
-		long time = System.nanoTime();
-		
 		double vecX = Math.cos(direction)*speed*walkPace*world.getGameSpeed();
 		double vecY = Math.sin(direction)*speed*walkPace*world.getGameSpeed();
 		float newX = (float)(x + vecX), newY = (float)(y + vecY);
@@ -295,8 +293,6 @@ public class Animal extends Entity {
 		
 		reregist();	// 空間ツリーへの再登録
 		clearInSightEntity(); // エンティティリストのクリア
-		
-		timeC += System.nanoTime() - time;
 	}
 
 	// 捕食
