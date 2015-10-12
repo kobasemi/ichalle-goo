@@ -21,12 +21,12 @@ public class GeneManager {
 	private int originNum = 4;				// 始祖動物の種類数
 	private int decentDepth = 3;			// 親エンティティを何代前まで遡って比較するか
 	
-	private double plantEaterPreyRank = 0.75;	// 食性による捕食可能ランクの補正
+	private double plantEaterPreyRank = 1.25;	// 食性による捕食可能ランクの補正
 	private double mixedEaterPreyRank = 1.0;
-	private double fleshEaterPreyRank = 1.25;
+	private double fleshEaterPreyRank = 0.75;
 	
-	private double plantEnergyMin = 3000;	// 植物のエネルギー
-	private double plantEnergyMax = 9000;
+	private double plantEnergyMin = 30000;	// 植物のエネルギー
+	private double plantEnergyMax = 90000;
 	
 	// 遺伝子情報、ステータスの最小値，最大値、コスト
 	private float rgbMin = 0;					// 体色

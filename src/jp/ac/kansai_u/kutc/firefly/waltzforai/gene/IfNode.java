@@ -37,18 +37,14 @@ public class IfNode extends GeneNode {
 		// 条件分岐の結果
 		boolean result = true;
 		
-		// このif文で条件分岐メソッドを呼び出す
+		// このswitch文で条件分岐メソッドを呼び出す
 		// メソッドを追加したらここも書き加えてください
-		if(condition.equals(Condition.preyInSight)){
-			result = preyInSight(animal);
-		}else if(condition.equals(Condition.enemyInRange)){
-			result = enemyInSight(animal);
-		}else if(condition.equals(Condition.friendInRange)){
-			result = friendInSight(animal);
-		}else if(condition.equals(Condition.randomBranch)){
-			result = randomBranch(animal);
-		}else if(condition.equals(Condition.canMakeChild)){
-			result = canMakeChild(animal);
+		switch(condition){
+		case preyInSight: result = preyInSight(animal); break;
+		case enemyInSight: result = enemyInSight(animal); break;
+		case friendInSight: result = friendInSight(animal); break;
+		case randomBranch: result = randomBranch(animal); break;
+		case canMakeChild: result = canMakeChild(animal); break;
 		}
 		
 		// 結果に基づいて次のアクションを呼び出す
@@ -122,7 +118,7 @@ public class IfNode extends GeneNode {
 enum Condition{
 	// ここに条件分岐メソッド名を追加する
 	// メソッドを追加したらここも書き加えてください
-	preyInSight, enemyInRange, friendInRange, randomBranch, canMakeChild;
+	preyInSight, enemyInSight, friendInSight, randomBranch, canMakeChild;
 	
 	// 以下はランダム選択用
 	private static final List<Condition> VALUES = Collections.unmodifiableList(Arrays.asList(values()));

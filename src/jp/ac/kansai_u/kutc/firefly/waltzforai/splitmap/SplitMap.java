@@ -39,40 +39,38 @@ public class SplitMap {
 		spaceTree = new Space[spaceNum[splitLevel+1]];
 	}
 	
-	// 衝突判定は動くEntity(Animalサブクラス)の中で行う
-	// このメソッドでは衝突の可能性のあるEntityを検出する
-	public void allCheckNearEntity(){
+	// 衝突判定は動くEntity(Animalクラス)の中で行う
+	public void allEntityCollisionCheck(){
 		if(spaceTree[0] == null){
 			return;
 		}
 
 		List<Animal> sStack = new ArrayList<Animal>();
 		List<Entity> oStack = new ArrayList<Entity>();
-		checkNearEntity(0, sStack, oStack);
+		entityCollisionCheck(0, sStack, oStack);
 	}
 	
-	private boolean checkNearEntity(int elem, List<Animal> sStack, List<Entity> oStack){
-		// 空間内の主体エンティティの視界と客体エンティティの実体の近接オブジェクトリスト作成
+	private boolean entityCollisionCheck(int elem, List<Animal> sStack, List<Entity> oStack){
+		// 空間内の主体エンティティの視界と客体エンティティの実体の衝突判定
 		TreeSight sObj = spaceTree[elem].getSightHead();
 		while(sObj != null){
-			TreeBody oObj = spaceTree[elem].getEntityHead();
+			TreeSight oObj = sObj.getNext();
 			while(oObj != null){
-				// 主体エンティティの近接オブジェクトリストに近接オブジェクトリストを追加する
+				// 主体エンティティの衝突判定
 				sObj.getEntity().collisionCheck(oObj.getEntity());
 				oObj = oObj.getNext();
 			}
-			// 客体スタックとの近接オブジェクトリスト作成
+			// 客体スタックとの衝突判定
 			for(int i = 0; i < oStack.size(); i++){
 				sObj.getEntity().collisionCheck(oStack.get(i));
 			}
 			sObj = sObj.getNext();
 		}
 		
-		// 主体スタックとの近接オブジェクトリスト作成
+		// 主体スタックとの衝突判定
 		for(int i = 0; i < sStack.size(); i++){
 			TreeBody oObj = spaceTree[elem].getEntityHead();
 			while(oObj != null){
-				// 近接オブジェクトリストに客体オブジェクトを追加する
 				sStack.get(i).collisionCheck(oObj.getEntity());
 				oObj = oObj.getNext();
 			}
@@ -101,7 +99,7 @@ public class SplitMap {
 					}
 				}
 				existChild = true;
-				checkNearEntity(nextElem, sStack, oStack); // 子空間へ
+				entityCollisionCheck(nextElem, sStack, oStack); // 子空間へ
 			}
 		}
 		

@@ -14,6 +14,7 @@ public class Util {
 		return Math.sqrt(dx*dx + dy*dy);
 	}
 	
+	// 最適化のためにAnimalクラス内に移動
 	// 2つのエンティティが衝突しているか
 	/*public static boolean isCollided(Entity e1, Entity e2){
 		float dx = e1.getX() - e2.getX(), dy = e1.getY() - e2.getY(), ar = e1.getSize() + e2.getSize();
@@ -34,11 +35,11 @@ public class Util {
 		digreeSub -= (int)(digreeSub/(Math.PI*2))*Math.PI*2;
 		return digreeSub > Math.PI ? digreeSub - Math.PI*2 : digreeSub;
 	}
-	
+
+	// 最適化のためにAnimalクラス内に移動
 	// 他エンティティが視界内にいるか (se:主体  oe:客体)
 	// seの視野は視界半径と視野角から求められる扇型
 	// それとoe本体との衝突判定（衝突していればtrue）
-	// 最適化のためにAnimalクラス内に移動
 	/*public static boolean inSight(Animal se, Entity oe){
 		// 主体と客体の距離が(主体の視界半径+客体の大きさの半径)より大きい場合
 	    float dx = oe.getX() - se.getX();

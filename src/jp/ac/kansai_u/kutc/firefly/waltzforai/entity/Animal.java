@@ -147,18 +147,9 @@ public class Animal extends Entity {
 	// 1フレーム毎に実行される更新メソッド
 	@Override
 	public void update() {
-		if(!isAlive()){
-			return;
-		}
 		long time = System.nanoTime();
 		geneHead.perform(this);				// 行動ツリーの実行	
 		timeB += System.nanoTime() - time;
-		
-		age += world.getGameSpeed();
-		childTime += world.getGameSpeed();	// 経過時間に加算
-		if(lifeSpan < age){
-			world.returnAllEnergy(this);
-		}
 	}
 	
 	// 衝突
@@ -189,7 +180,7 @@ public class Animal extends Entity {
 	
 	// エンティティとの位置関係を調べる
 	public void collisionCheck(Entity e){
-		if((edibility.equals(Edibility.Flesh) && e instanceof Plant) || e.equals(this) || !e.isAlive()){
+		if((edibility.equals(Edibility.Flesh) && e instanceof Plant) || e.equals(this)){
 			return;
 		}
 		
@@ -266,9 +257,6 @@ public class Animal extends Entity {
 	// 1フレーム分の移動
 	@Override
 	public void move(){
-		if(!isAlive()){
-			return;
-		}
 		long time = System.nanoTime();
 		
 		double vecX = Math.cos(direction)*speed*walkPace*world.getGameSpeed();
@@ -294,7 +282,14 @@ public class Animal extends Entity {
 
 		x = newX;
 		y = newY;
-
+		
+		// 経過時間を加算
+		age += world.getGameSpeed();
+		childTime += world.getGameSpeed();
+		if(lifeSpan < age){
+			world.returnAllEnergy(this);
+		}
+		
 		// 移動に使ったenergyをworldに返す
 		world.returnCostEnergy(this);
 

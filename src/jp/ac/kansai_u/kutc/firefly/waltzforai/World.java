@@ -43,7 +43,7 @@ public class World extends Thread{
 		geneManager = new GeneManager(this);
 		
 		entities = new ArrayList<Entity>();
-		energy = 100000000;
+		energy = 1000000000;
 		randomCreateEntity(energy);
 		display.setEntityList(new ArrayList<Entity>(entities));
 		
@@ -67,7 +67,7 @@ public class World extends Thread{
 		double plantSpend, animalspend;
 		while(energy > 0.01){
 			plantSpend = energyMin + Math.random()*(energyMax-energyMin);
-			animalspend = 100000 + Math.random()*100000;
+			animalspend = 1000000 + Math.random()*1000000;
 			if(energy < plantSpend + animalspend){
 				animalspend = energy;
 				plantSpend = 0;
@@ -177,15 +177,15 @@ public class World extends Thread{
 	
 	// フレーム毎に実行される更新メソッド (このクラスの肝)
 	private void update(){
+		long allTime = System.nanoTime();
+		// 衝突判定
+		splitMap.allEntityCollisionCheck();
+		long smTime = System.nanoTime() - allTime;
+		
 		// エンティティリストをコピー
 		List<Entity> updateList = new ArrayList<Entity>(entities);
 		// コピーしたリストをディスプレイにセット
 		display.setEntityList(updateList);
-		
-		long allTime = System.nanoTime();
-		// 当たりそうなエンティティの検出
-		splitMap.allCheckNearEntity();
-		long smTime = System.nanoTime() - allTime;
 		
 		// 全てのエンティティの状態を更新
 		for(int i = 0; i < updateList.size(); i++){
