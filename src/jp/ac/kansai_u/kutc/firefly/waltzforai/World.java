@@ -139,7 +139,10 @@ public class World extends Thread{
 	
 	// エンティティをワールドに追加する
 	public void addEntity(Entity entity){
-		entities.add(entity);
+		if(!entities.add(entity)){
+			return;
+		}
+		
 		if(entity instanceof Animal){
 			splitMap.regist(new TreeBody(entity));
 			splitMap.regist(new TreeSight((Animal) entity));
@@ -161,7 +164,9 @@ public class World extends Thread{
 	
 	// エンティティをワールドから削除
 	public void removeEntity(Entity entity){
-		entities.remove(entity);
+		if(!entities.remove(entity)){
+			return;
+		}
 		
 		// 種類に応じてカウント
 		if(entity instanceof Plant){

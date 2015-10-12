@@ -54,7 +54,7 @@ public class SplitMap {
 		// 空間内の主体エンティティの視界と客体エンティティの実体の衝突判定
 		TreeSight sObj = spaceTree[elem].getSightHead();
 		while(sObj != null){
-			TreeSight oObj = sObj.getNext();
+			TreeBody oObj = spaceTree[elem].getEntityHead();
 			while(oObj != null){
 				// 主体エンティティの衝突判定
 				sObj.getEntity().collisionCheck(oObj.getEntity());

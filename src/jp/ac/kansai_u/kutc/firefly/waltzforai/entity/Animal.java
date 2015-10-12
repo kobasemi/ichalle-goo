@@ -180,7 +180,7 @@ public class Animal extends Entity {
 	
 	// エンティティとの位置関係を調べる
 	public void collisionCheck(Entity e){
-		if((edibility.equals(Edibility.Flesh) && e instanceof Plant) || e.equals(this)){
+		if((edibility.equals(Edibility.Flesh) && e instanceof Plant) || e.equals(this) || !e.isAlive()){
 			return;
 		}
 		
