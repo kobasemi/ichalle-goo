@@ -1,6 +1,7 @@
 package jp.ac.kansai_u.kutc.firefly.waltzforai.entity;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import jp.ac.kansai_u.kutc.firefly.waltzforai.Display;
@@ -13,7 +14,7 @@ public class Animal extends Entity {
 	private TreeSight treeSight;			// 視野の所属ツリーオブジェクト
 
 	// 遺伝情報
-	private Animal parent1, parent2;		// 親Animal
+	private List<HashSet<Animal>> parents;		// 親Animal
 	private GeneNode geneHead;				// 行動を表すツリーのヘッド
 	private Edibility edibility;			// 食性 (捕食可能なもの)
 	private double preyRank;				// 捕食ランク
@@ -45,7 +46,7 @@ public class Animal extends Entity {
 		private float x, y;
 		private double energy;
 
-		private Animal parent1, parent2;
+		private List<HashSet<Animal>> parents;
 		private GeneNode geneHead;
 		private Edibility edibility;
 		private double preyRank;
@@ -74,7 +75,7 @@ public class Animal extends Entity {
 			return new Animal(this);
 		}
 
-		public void setParents(Animal parent1, Animal parent2) { this.parent1 = parent1; this.parent2 = parent2; }
+		public void setParents(List<HashSet<Animal>> parents) { this.parents = parents; }
 		public void setGeneHead(GeneNode geneHead) { this.geneHead = geneHead; }
 		public void setEdibility(Edibility edibility) { this.edibility = edibility; }
 		public void setPreyRank(double preyRank) { this.preyRank = preyRank; }
@@ -90,8 +91,7 @@ public class Animal extends Entity {
 
 	public Animal(Builder b) {
 		super(b.world, b.x, b.y, b.energy);
-		this.parent1 = b.parent1;
-		this.parent2 = b.parent2;
+		this.parents = b.parents;
 		this.geneHead = b.geneHead;
 		this.edibility = b.edibility;
 		this.preyRank = b.preyRank;
@@ -289,10 +289,10 @@ public class Animal extends Entity {
 		if(lifeSpan < age){
 			world.returnAllEnergy(this);
 		}
-		
+
 		// 移動に使ったenergyをworldに返す
 		world.returnCostEnergy(this);
-
+		
 		reregist();	// 空間ツリーへの再登録
 		clearInSightEntity(); // エンティティリストのクリア
 		
@@ -317,6 +317,9 @@ public class Animal extends Entity {
 
 	// 空間ツリーへの再登録
 	protected void reregist() {
+		if(!isAlive){
+			return;
+		}
 		treeBody.remove();
 		treeSight.remove();
 		SplitMap sm = world.getSplitMap();
@@ -354,8 +357,7 @@ public class Animal extends Entity {
 	public void setChildTime(double childTime) { this.childTime = childTime; }
 	
 	// ゲッタ	
-	public Animal getParent1() { return parent1; }
-	public Animal getParent2() { return parent2; }
+	public List<HashSet<Animal>> getParents(){ return parents; }
 	public GeneNode getGeneHead(){ return geneHead; }
 	public Edibility getEdibility() { return edibility; }
 	public float getSight(){ return sight; }

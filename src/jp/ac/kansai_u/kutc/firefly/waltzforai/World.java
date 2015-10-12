@@ -107,7 +107,7 @@ public class World extends Thread{
 		this.energy += moveCost;
 		
 		// 300分の1の確率でplantを追加する
-		if((int)(Math.random()*300/gameSpeed) == 0){
+		if((int)(Math.random()*1000/gameSpeed) == 0){
 			double energyMin = geneManager.getPlantEnergyMin(), energyMax = geneManager.getPlantEnergyMax();
 			double spend = energyMin + Math.random()*(energyMax-energyMin);
 			if(this.energy > spend){

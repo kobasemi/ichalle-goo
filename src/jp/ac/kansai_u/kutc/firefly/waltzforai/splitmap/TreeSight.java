@@ -16,5 +16,5 @@ public class TreeSight extends TreeObject{
 	@Override
 	public Animal getEntity(){ return (Animal)entity; }
 	@Override
-	public TreeSight getNext(){ return (TreeSight) next; }
+	public TreeSight getNext(){ return (TreeSight)next; }
 }

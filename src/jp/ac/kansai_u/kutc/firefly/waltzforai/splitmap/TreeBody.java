@@ -14,5 +14,5 @@ public class TreeBody extends TreeObject{
 	}
 	
 	@Override
-	public TreeBody getNext(){ return (TreeBody) next; }
+	public TreeBody getNext(){ return (TreeBody)next; }
 }

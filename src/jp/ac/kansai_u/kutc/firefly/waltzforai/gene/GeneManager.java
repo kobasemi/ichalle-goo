@@ -1,6 +1,7 @@
 package jp.ac.kansai_u.kutc.firefly.waltzforai.gene;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -25,8 +26,8 @@ public class GeneManager {
 	private double mixedEaterPreyRank = 1.0;
 	private double fleshEaterPreyRank = 0.75;
 	
-	private double plantEnergyMin = 30000;	// 植物のエネルギー
-	private double plantEnergyMax = 90000;
+	private double plantEnergyMin = 100000;	// 植物のエネルギー
+	private double plantEnergyMax = 200000;
 	
 	// 遺伝子情報、ステータスの最小値，最大値、コスト
 	private float rgbMin = 0;					// 体色
@@ -52,7 +53,7 @@ public class GeneManager {
 	private double childSpanMax = 360;
 	private double childSpanCost = 5;
 	private float sizeMin = 5.0f;				// 大きさ
-	private float sizeMax = 10.0f;
+	private float sizeMax = 20.0f;
 	private double walkPaceMin = 0.0;			// 歩く速さ
 	private double walkPaceMax = 2.0;
 	private int MutationMin = 1;				// 突然変異が起きる箇所の数
@@ -120,6 +121,13 @@ public class GeneManager {
 			parent2 = mixedEaterOrigin.get(parentElem2);
 		}
 		
+		List<HashSet<Animal>> parents = new ArrayList<HashSet<Animal>>(decentDepth);
+		for(int i = 0; i < decentDepth; i++){
+			parents.add(new HashSet<Animal>());
+		}
+		parents.get(0).add(parent1);
+		parents.get(0).add(parent2);
+		
 		double preyRank = Math.random();
 		cost += preyRank*preyRankCost;
 		
@@ -143,10 +151,10 @@ public class GeneManager {
 		double childSpan = childSpanMin + childSpanVal*(childSpanMax-childSpanMin);
 		cost += (1.0-childSpanVal)*childSpanCost;
 		
-		float size = (float)(sizeMin + (cost/100 > 1.0 ? 1.0 : cost/100) * (sizeMax-sizeMin));
+		float size = (float)(sizeMin + (cost/300 > 1.0 ? 1.0 : cost/300) * (sizeMax-sizeMin));
 		sight = size + sight;	// 視野は身体のサイズにプラスする
 		
-		b.setParents(parent1, parent2);
+		b.setParents(parents);
 		b.setGeneHead(geneHead);
 		b.setEdibility(edibility);
 		b.setColor(clr, clg, clb);
@@ -209,6 +217,14 @@ public class GeneManager {
 			cost += mixedEaterCost;
 		}
 		
+		List<HashSet<Animal>> parents = new ArrayList<HashSet<Animal>>(decentDepth);
+		parents.add(new HashSet<Animal>(Arrays.asList(e1, e2)));
+		for(int i = 0; i < decentDepth-1; i++){
+			HashSet<Animal> grandParents = new HashSet<Animal>(e1.getParents().get(i));
+			grandParents.addAll(e2.getParents().get(i));
+			parents.add(grandParents);
+		}
+		
 		double preyRank = (e1.getPreyRank() + e2.getPreyRank()) / 2.0;
 		preyRank = mutateState(preyRank, 1.0, 0.0);
 		double preyRankVal = getStateRatio(preyRank, 1.0, 0.0);
@@ -243,7 +259,7 @@ public class GeneManager {
 		sight = size + sight;	// 視野は身体のサイズにプラスする
 		
 		// ビルダーの設定
-		b.setParents(e1, e2);
+		b.setParents(parents);
 		b.setGeneHead(geneTree);
 		b.setEdibility(edibility);
 		b.setColor(clr, clg, clb);
@@ -366,9 +382,10 @@ public class GeneManager {
 		}
 		// ハッシュセットで親を比較する
 		HashSet<Animal> descent1 = new HashSet<Animal>(), descent2 = new HashSet<Animal>();
-		descent1.add(animal); descent2.add((Animal)entity);
-		checkParents(animal, descent1, decentDepth);
-		checkParents((Animal)entity, descent2, decentDepth);
+		for(int i = 0; i < decentDepth; i++){
+			descent1.addAll(animal.getParents().get(i));
+			descent2.addAll(((Animal)entity).getParents().get(i));
+		}
 		for(Animal parent: descent1){
 			// 同じ親があれば友好
 			if(descent2.contains(parent)){
@@ -376,20 +393,6 @@ public class GeneManager {
 			}
 		}
 		return false;
-	}
-	
-	// 親エンティティを調べる
-	private void checkParents(Animal animal, HashSet<Animal> descent, int depth){
-		if(depth <= 0){
-			return;
-		}
-		Animal parent1 = animal.getParent1(), parent2 = animal.getParent2();
-		if(parent1 != null && descent.add(parent1)){
-			checkParents(parent1, descent, depth-1);
-		}
-		if(parent2 != null && descent.add(parent2)){
-			checkParents(parent2, descent, depth-1);
-		}
 	}
 	
 	// 捕食可能なエンティティか？
