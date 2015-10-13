@@ -24,18 +24,16 @@ import javax.swing.JLabel;
 
 //はじめに表示されるウィンドウ　setVisibleでフレームを切り替える
 public class MainFrame extends JFrame{
-	private static final long serialVersionUID = 1L;
-	public static int w;
-	public static int h;
+	private static final long serialVersionUID = -1156954138923309157L;
+
 	// コンストラクタ
 	public MainFrame(){
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		this.setSize(screenSize.width, screenSize.height);
-		w = screenSize.width;
-		h = screenSize.height;
 
-		FstFrame firstF = new FstFrame("フレーム"); // 下部にフレームを作るクラスがある．
-		SecondFrame secondF = new SecondFrame();  // visibleを決めるためインスタンス化する
+		FstFrame firstF = new FstFrame("フレーム"); 	// 下部にフレームを作るクラスがある．
+		firstF.setSize(getWidth(), getHeight());
+		SecondFrame secondF = new SecondFrame(getWidth(), getHeight());  	// visibleを決めるためインスタンス化する
 		// FstFrameに貼るボタンの設定
 		ImageIcon icon = new ImageIcon("btn.png");
 	    JButton btn = new JButton(icon);
@@ -54,19 +52,19 @@ public class MainFrame extends JFrame{
 	    		//ExThread1 thread1 = new ExThread1();
 	    		//thread1.start();
 	    		
-	    		// スタートボタンを押したタイミングでワールドを動かし始める by kosuke
-	    		secondF.processing.startWorld();
+	    		// スタートボタンを押したタイミングでワールドを動かし始める
+	    		secondF.getDisplay().startWorld();
 	    	}
 	    });
-	    btn.setBounds(w/2-50, h-h/3, 100, 50);
+	    btn.setBounds(getWidth()/2-50, getHeight()-getHeight()/3, 100, 50);
 	    JLabel titleL = new JLabel("Waltz for AI");
 	    titleL.setFont(new Font("Century", Font.ITALIC, 100));
 	    titleL.setForeground(new Color(255, 239, 233));
-	    titleL.setBounds(w/2-300, h/2-100, w+300, 200);
+	    titleL.setBounds(getWidth()/2-300, getHeight()/2-100, getWidth()+300, 200);
 	    // FstFrameに背景画像をラベルで載せる
 	    JLabel lblimg = new JLabel();
 		lblimg.setIcon(new ImageIcon("bgi.jpg"));
-		lblimg.setBounds(0,0,MainFrame.w, MainFrame.h);
+		lblimg.setBounds(0, 0, getWidth(), getHeight());
 		// FstFrameに上に貼りたい物から順にadd
 		firstF.add(titleL);
 	    firstF.add(btn);
@@ -86,7 +84,6 @@ public class MainFrame extends JFrame{
 class FstFrame extends JFrame{
 	private static final long serialVersionUID = 1L;
 	public FstFrame(String title){
-	    setSize(MainFrame.w, MainFrame.h);
 	    setDefaultCloseOperation(EXIT_ON_CLOSE);
 	    setLayout(null);
 	}
@@ -98,11 +95,7 @@ class ExThread1 extends Thread {
 		AudioInputStream audioStream = null;
 		try {
 			audioStream = AudioSystem.getAudioInputStream(soundFile);
-		} catch (UnsupportedAudioFileException e) {
-			// TODO 自動生成された catch ブロック
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO 自動生成された catch ブロック
+		} catch (UnsupportedAudioFileException | IOException e) {
 			e.printStackTrace();
 		}
 		AudioFormat format = audioStream.getFormat();
@@ -110,17 +103,8 @@ class ExThread1 extends Thread {
 		Clip line = null;
 		try {
 			line = (Clip) AudioSystem.getLine(info);
-		} catch (LineUnavailableException e) {
-			// TODO 自動生成された catch ブロック
-			e.printStackTrace();
-		}
-		try {
 			line.open(audioStream);
-		} catch (LineUnavailableException e) {
-			// TODO 自動生成された catch ブロック
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO 自動生成された catch ブロック
+		} catch (LineUnavailableException | IOException e) {
 			e.printStackTrace();
 		}
 		line.start();

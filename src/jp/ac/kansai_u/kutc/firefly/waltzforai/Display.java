@@ -1,6 +1,5 @@
 package jp.ac.kansai_u.kutc.firefly.waltzforai;
 
-import java.awt.Rectangle;
 import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,8 +7,6 @@ import java.util.List;
 
 import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Animal;
 import jp.ac.kansai_u.kutc.firefly.waltzforai.entity.Entity;
-import jp.ac.kansai_u.kutc.firefly.waltzforai.frame.MainFrame;
-import jp.ac.kansai_u.kutc.firefly.waltzforai.frame.SecondFrame;
 import processing.core.PApplet;
 import processing.core.PVector;
 import processing.event.MouseEvent;
@@ -28,28 +25,31 @@ public class Display extends PApplet{
 	
 	public Display(){
 		world = new World(this, 8000, 6000);
-
+		
 		basePos = new PVector();
 		dragPos = new PVector();
-		buttons = new ArrayList<Button>();
+		basePos.set(world.getWidth()/2, world.getHeight()/2);
+		
 		scale = 1.0f;
+	}
+	
+	@Override
+	public void setBounds(int x, int y, int width, int height){
+		super.setBounds(x, y, width, height);
+		
+		// ボタンの配置
+		buttons = new ArrayList<Button>();
+		buttons.addAll(Arrays.asList(new PauseButton(width-50, 20)));
+	}
+	
+	// ワールドのスレッドを開始する
+	public void startWorld(){
+		world.start();
 	}
 	
 	/*public static void main(String args[]){
 		PApplet.main(new String[] { "--present", "jp.ac.kansai_u.kutc.firefly.waltzforai.Display" });
 	}*/
-
-	@Override
-	public void setup(){
-		setBounds(MainFrame.w/3, 0, MainFrame.w*2/3, MainFrame.h);
-		//size(MainFrame.w*2/3, MainFrame.h);
-		
-		// ベースポジションのセット
-		basePos.set(world.getWidth()/2, world.getHeight()/2);
-		
-		// ボタンの配置
-		buttons.addAll(Arrays.asList(new PauseButton(MainFrame.w*2/3-50, 20)));
-	}
 
 	@Override
 	public void draw(){
@@ -79,11 +79,6 @@ public class Display extends PApplet{
 		fill(0);
 		text(String.format("(%.0f,%.0f)  Speed x%.2f  Zoom x%.2f", basePos.x, basePos.y, world.getGameSpeed(), scale), 10, 20);
 		text(String.format("FPS: %.1f", world.getRealFPS()), 10, 40);
-		
-		SecondFrame.plant = world.getPlantNum();
-		SecondFrame.plantE = world.getPlantEaterNum();
-		SecondFrame.fleshE = world.getFleshEaterNum();
-		SecondFrame.omni = world.getOmnivorousNum();
 	}
 	
 	@Override
@@ -162,12 +157,9 @@ public class Display extends PApplet{
 		return false;
 	}
 
+	// ゲッタ
+	public World getWorld(){ return world; }
 	
-	// ワールドのスレッドを開始する
-	public void startWorld(){
-		world.start();
-	}
-
 	// セッタ
 	public void setEntityList(List<Entity> entities){ this.entities = entities; }
 	

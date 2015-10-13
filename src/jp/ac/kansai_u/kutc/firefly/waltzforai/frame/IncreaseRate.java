@@ -2,23 +2,23 @@ package jp.ac.kansai_u.kutc.firefly.waltzforai.frame;
 
 // 増加率の高い個体を調べる
 public class IncreaseRate {
-	public static int preplantNum = 0;
-	public static int preplantENum = 0;
-	public static int prefleshENum = 0;
-	public static int preomniNum = 0;
-	public static int incleaseplant;
-	public static int incleaseplantE;
-	public static int incleasefleshE;
-	public static int incleaseomni;
-	public static String advantage = "plant";
-	public static String prebgm = "plant";
+	private int preplantNum = 0;
+	private int preplantENum = 0;
+	private int prefleshENum = 0;
+	private int preomniNum = 0;
+	private int incleaseplant;
+	private int incleaseplantE;
+	private int incleasefleshE;
+	private int incleaseomni;
+	private String advantage = "plant";
+	private String prebgm = "plant";
+	
+	private int plantNum = 0;
+	private int plantENum = 0;
+	private int fleshENum = 0;
+	private int omniNum = 0;
 
-	public static void renew() {
-		int plantNum = SecondFrame.plant;
-		int plantENum = SecondFrame.plantE;
-		int fleshENum = SecondFrame.fleshE;
-		int omniNum = SecondFrame.omni;
-
+	public void renew() {
 		// 0での除算を避ける
 		if(preplantNum == 0)
 			incleaseplant = plantNum;
@@ -58,4 +58,14 @@ public class IncreaseRate {
 		}
 		advantage = maxSeries;
 	}
+	
+	// ゲッタ
+	public String getAdvantage(){ return advantage; }
+	public String getPrebgm(){ return prebgm; }
+	
+	// セッタ
+	public void setPlantNum(int num){ this.plantNum = num; }
+	public void setPlantENum(int num){ this.plantENum = num; }
+	public void setFleshENum(int num){ this.fleshENum = num; }
+	public void setOmniNum(int num){ this.omniNum = num; }
 }
