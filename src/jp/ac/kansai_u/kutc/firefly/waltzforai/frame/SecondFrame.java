@@ -134,7 +134,7 @@ public class SecondFrame extends JFrame{
 		infoLabel.setBackground(new Color(1, 1, 1, 0));
 		*/
 		// 情報ラベル（BGM）
-		bgmLabel = new JLabel("　Dominance ： natural");
+		bgmLabel = new JLabel("　Dominance ："+increaseRate.getAdvantage());
 		bgmLabel.setFont(new Font("Century", Font.PLAIN, 30));
 		bgmLabel.setForeground(new Color(255, 255, 240));
 		bgmLabel.setBackground(new Color(1, 1, 1, 0));
@@ -160,7 +160,6 @@ public class SecondFrame extends JFrame{
 		omniLabel.setForeground(new Color(255, 255, 240));
 		// パネルにラベルを登録していく
 		infoP.add(bgmLabel);
-		//infoP.add(infoLabel);
 		infoP.add(numLabel);
 		infoP.add(plantLabel);
 		infoP.add(plantEatLabel);
@@ -346,7 +345,7 @@ public class SecondFrame extends JFrame{
 	class RepT implements Runnable {
 		public void run() {
 			// 初期の音楽を鳴らす
-			String premusic = "plant";
+			String premusic = "plant-eater";
 			int i=1, j=1;
 			PlayBGM p = new PlayBGM();
 			p.start(premusic);
@@ -358,25 +357,25 @@ public class SecondFrame extends JFrame{
 				try {
 					// 20秒間の増加率を調べ，最も増加の多い音楽に切り替える
 					if(i%10 == 0){
-						increaseRate.setPlantNum(plant);
+						//increaseRate.setPlantNum(plant);
 						increaseRate.setPlantENum(plantE);
 						increaseRate.setFleshENum(fleshE);
 						increaseRate.setOmniNum(omni);
 						increaseRate.renew(); // 増加率を更新
-						if(increaseRate.getAdvantage().equals(premusic)){
-							j++;
-						}else{
+						//if(increaseRate.getAdvantage().equals(premusic)){
+							//j++;
+						//}else{
 							p.stop();
 							p.start(increaseRate.getAdvantage());
 							premusic = increaseRate.getAdvantage();
-						}
+						//}
 					}
 					// BGMが最後までなったら．
-					if(j%5 == 0){
+					/*if(j%5 == 0){
 						p.stop();
 						p.start(increaseRate.getAdvantage());
 						j=1;
-					}
+					}*/
 					i++;
 					Thread.sleep(2000);
 					resetChart();

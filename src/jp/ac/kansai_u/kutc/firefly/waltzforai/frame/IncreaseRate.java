@@ -10,8 +10,8 @@ public class IncreaseRate {
 	private int incleaseplantE;
 	private int incleasefleshE;
 	private int incleaseomni;
-	private String advantage = "plant";
-	private String prebgm = "plant";
+	private String advantage = "plant-eater";
+	private String prebgm = "plant-eater";
 	
 	private int plantNum = 0;
 	private int plantENum = 0;
@@ -45,10 +45,9 @@ public class IncreaseRate {
 		prefleshENum = fleshENum;
 		preomniNum = omniNum;
 
-		String[] speices = {"plant", "plant-eater", "flesh-eater", "omnivorous"};
+		String[] speices = { "plant-eater", "flesh-eater", "omnivorous"};
 		String maxSeries = speices[0];
-		int[] series = { incleaseplant, incleaseplantE, incleasefleshE,
-				incleaseomni }; // 配列を作成
+		int[] series = { incleaseplantE, incleasefleshE,incleaseomni }; // 配列を作成
 		int max = series[0];
 		for (int i = 0; i < series.length; i++) {
 			if (max < series[i]) { // 現在の最大値よりも大きい値が出たら
