@@ -85,7 +85,7 @@ public class SecondFrame extends JFrame{
 		JMenuBar menubar = new JMenuBar();
 		JMenu menu1 = new JMenu("Menu");
 		menu1.setOpaque(false);
-		menubar.setBackground(Color.BLACK);
+		menubar.setBackground(Color.WHITE);
 		menubar.add(menu1);
 		JMenuItem menuitem1 = new JMenuItem("Close");
 		menuitem1.addActionListener(new ActionListener() {

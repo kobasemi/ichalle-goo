@@ -1,5 +1,6 @@
 package jp.ac.kansai_u.kutc.firefly.waltzforai.frame;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -29,9 +30,9 @@ public class MainFrame extends JFrame{
 		ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource("btn.png"));
 	    JButton btn = new JButton(icon);
 	    JLabel l = new JLabel("Start");
-	    l.setFont(new Font("Century", Font.ITALIC, 30));
+	    l.setFont(new Font("Century", Font.ITALIC, 27));
 	    l.setForeground(new Color(255, 239, 233));
-	    btn.add(l);
+	    btn.add(l,BorderLayout.CENTER);
 	    btn.setPreferredSize(new Dimension(200,50));
 	    btn.setHorizontalTextPosition(JButton.CENTER);
 	    btn.addActionListener(new ActionListener(){
