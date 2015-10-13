@@ -346,7 +346,7 @@ public class SecondFrame extends JFrame{
 		public void run() {
 			// 初期の音楽を鳴らす
 			String premusic = "plant-eater";
-			int i=1, j=1;
+			int i=1;
 			PlayBGM p = new PlayBGM();
 			p.start(premusic);
 			while (true) {
@@ -362,20 +362,12 @@ public class SecondFrame extends JFrame{
 						increaseRate.setFleshENum(fleshE);
 						increaseRate.setOmniNum(omni);
 						increaseRate.renew(); // 増加率を更新
-						//if(increaseRate.getAdvantage().equals(premusic)){
-							//j++;
-						//}else{
+						if(!increaseRate.getAdvantage().equals(premusic)){
 							p.stop();
 							p.start(increaseRate.getAdvantage());
 							premusic = increaseRate.getAdvantage();
-						//}
+						}
 					}
-					// BGMが最後までなったら．
-					/*if(j%5 == 0){
-						p.stop();
-						p.start(increaseRate.getAdvantage());
-						j=1;
-					}*/
 					i++;
 					Thread.sleep(2000);
 					resetChart();
