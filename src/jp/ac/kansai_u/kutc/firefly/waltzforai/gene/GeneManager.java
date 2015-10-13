@@ -200,7 +200,7 @@ public class GeneManager {
 		if(spawnY < 0){
 			spawnY = world.getHeight() + spawnY - sizeMax;
 		}else if(world.getHeight() < spawnY){
-			spawnX = spawnY - world.getHeight() + sizeMax;
+			spawnY = spawnY - world.getHeight() + sizeMax;
 		}
 		Animal.Builder b = new Animal.Builder(world, spawnX, spawnY, energy);
 		
