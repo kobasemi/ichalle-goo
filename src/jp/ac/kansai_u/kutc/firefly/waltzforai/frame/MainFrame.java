@@ -6,16 +6,7 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -89,7 +80,9 @@ class FstFrame extends JFrame{
 	}
 }
 
-class ExThread1 extends Thread {
+
+
+/*class ExThread1 extends Thread {
 	public void run() {
 		File soundFile = new File("./Forest.wav");
 		AudioInputStream audioStream = null;
@@ -111,4 +104,4 @@ class ExThread1 extends Thread {
 		line.drain();
 		line.close();
 	}
-}
+}*/

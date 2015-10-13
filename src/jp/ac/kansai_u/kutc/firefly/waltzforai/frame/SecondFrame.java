@@ -134,7 +134,7 @@ public class SecondFrame extends JFrame{
 		infoLabel.setBackground(new Color(1, 1, 1, 0));
 		*/
 		// 情報ラベル（BGM）
-		bgmLabel = new JLabel("　Dominance ："+increaseRate.getAdvantage());
+		bgmLabel = new JLabel("  Dominance: " + increaseRate.getAdvantage());
 		bgmLabel.setFont(new Font("Century", Font.PLAIN, 30));
 		bgmLabel.setForeground(new Color(255, 255, 240));
 		bgmLabel.setBackground(new Color(1, 1, 1, 0));
@@ -143,19 +143,19 @@ public class SecondFrame extends JFrame{
 		numLabel.setFont(new Font("Century", Font.PLAIN, 30));
 		numLabel.setForeground(new Color(255, 255, 240));
 		// 情報ラベル（個体数　草)
-		plantLabel = new JLabel("　・Plant : " + plant);
+		plantLabel = new JLabel("     Plant: " + plant);
 		plantLabel.setFont(new Font("Century", Font.PLAIN, 24));
 		plantLabel.setForeground(new Color(255, 255, 240));
 		// 情報ラベル（草食）
-		plantEatLabel = new JLabel("　・Plant-eater : " + plantE);
+		plantEatLabel = new JLabel("     Plant-eater: " + plantE);
 		plantEatLabel.setFont(new Font("Century", Font.PLAIN, 24));
 		plantEatLabel.setForeground(new Color(255, 255, 240));
 		// 情報ラベル（肉食）
-		fleshEatLabel = new JLabel("　・Flesh-eater : " + fleshE);
+		fleshEatLabel = new JLabel("     Flesh-eater: " + fleshE);
 		fleshEatLabel.setFont(new Font("Century", Font.PLAIN, 24));
 		fleshEatLabel.setForeground(new Color(255, 255, 240));
 		// 情報ラベル（雑食食）
-		omniLabel = new JLabel("　・Omnivorous : " + omni);
+		omniLabel = new JLabel("     Omnivorous: " + omni);
 		omniLabel.setFont(new Font("Century", Font.PLAIN, 24));
 		omniLabel.setForeground(new Color(255, 255, 240));
 		// パネルにラベルを登録していく
@@ -216,15 +216,15 @@ public class SecondFrame extends JFrame{
 	// 再描画メソッド
 	public void resetChart() {
 		// 情報ラベル（BGM）
-		bgmLabel.setText("　Dominance ： " + increaseRate.getAdvantage());
+		bgmLabel.setText("  Dominance: " + increaseRate.getAdvantage());
 		// 情報ラベル（個体数　草)
-		plantLabel.setText("　・Plant : " + plant);
+		plantLabel.setText("     Plant: " + plant);
 		// 情報ラベル（草食）
-		plantEatLabel.setText("　・Plant-eater : " + plantE);
+		plantEatLabel.setText("     Plant-eater: " + plantE);
 		// 情報ラベル（草食）
-		fleshEatLabel.setText("　・Flesh-eater : " + fleshE);
+		fleshEatLabel.setText("     Flesh-eater: " + fleshE);
 		// 情報ラベル（雑食食）
-		omniLabel.setText("　・Omnivorous : " + omni);
+		omniLabel.setText("     Omnivorous: " + omni);
 		
 		// グラフの更新
 		oresenP.setChart(oresendraw());	// 折れ線グラフ描画
