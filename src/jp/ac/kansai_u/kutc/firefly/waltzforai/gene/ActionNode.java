@@ -35,10 +35,12 @@ public class ActionNode extends GeneNode {
 		case runFromEnemy: runFromEnemy(animal); break;
 		case runFromEnemyDirection: runFromEnemyDirection(animal); break;
 		case chasePrey: chasePrey(animal); break;
+		case chasePreyDirection: chasePreyDirection(animal); break;
+		case approachFriend: approachFriend(animal); break;
+		case approachFriendDirection: approachFriendDirection(animal); break;
 		case changeDirection: changeDirection(animal); break;
 		case setWalkPace: setWalkPace(animal); break;
 		case setRandomWalkPace: setRandomWalkPace(animal); break;
-		case approachFriend: approachFriend(animal); break;
 		case doNothing: break;
 		default: break;
 		}
@@ -87,12 +89,28 @@ public class ActionNode extends GeneNode {
 		}
 	}
 	
+	// 近くの獲物へ向かう
+	private void chasePreyDirection(Animal animal){
+		List<Entity> list = animal.getInSightPreys();
+		if(list.size() > 0){
+			animal.setDirection(Util.getRadian(list.get(0).getX(), list.get(0).getY(), animal.getX(), animal.getY())+(value*2*Math.PI-Math.PI));
+		}
+	}
+	
 	// 近くの友好エンティティへ向かう
 	private void approachFriend(Animal animal){
 		List<Animal> list = animal.getInSightFriends();
 		if(list.size() > 0){
 			int elem = (int)(value*list.size());
 			animal.setDirection(Util.getRadian(animal.getX(), animal.getY(), list.get(elem).getX(), list.get(elem).getY()));
+		}
+	}
+	
+	// 近くの獲物へ向かう
+	private void approachFriendDirection(Animal animal){
+		List<Animal> list = animal.getInSightFriends();
+		if(list.size() > 0){
+			animal.setDirection(Util.getRadian(list.get(0).getX(), list.get(0).getY(), animal.getX(), animal.getY())+(value*2*Math.PI-Math.PI));
 		}
 	}
 
@@ -112,7 +130,7 @@ public class ActionNode extends GeneNode {
 	
 	// エンティティの向きを変える
 	private void changeDirection(Animal animal){
-		animal.setDirection(animal.getDirection()+(value*2*Math.PI-Math.PI));
+		animal.setDirection(animal.getDirection()+((value*2*Math.PI-Math.PI)*gm.getWorld().getGameSpeed()));
 	}
 	
 	/*// エンティティの向きをランダムに変える
@@ -139,8 +157,8 @@ public class ActionNode extends GeneNode {
 enum Action{
 	// ここにメソッド名を追加する
 	// メソッドを追加したらここも書き加えてください
-	runFromEnemy, runFromEnemyDirection, chasePrey, changeDirection, setWalkPace, 
-	setRandomWalkPace, approachFriend, doNothing;
+	runFromEnemy, runFromEnemyDirection, chasePrey, chasePreyDirection, approachFriend, 
+	approachFriendDirection, changeDirection, setWalkPace, setRandomWalkPace, doNothing;
 	
 	// 以下はランダム選択用
 	private static final List<Action> VALUES = Collections.unmodifiableList(Arrays.asList(values()));

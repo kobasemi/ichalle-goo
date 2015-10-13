@@ -15,7 +15,7 @@ public class Animal extends Entity {
 	private TreeSight treeSight;			// 視野の所属ツリーオブジェクト
 
 	// 遺伝情報
-	private List<HashSet<Animal>> parents;		// 親Animal
+	private List<HashSet<Animal>> parents;	// 親Animal
 	private GeneNode geneHead;				// 行動を表すツリーのヘッド
 	private Edibility edibility;			// 食性 (捕食可能なもの)
 	private double preyRank;				// 捕食ランク
@@ -32,6 +32,7 @@ public class Animal extends Entity {
 	private double walkPace;				// 移動ペース (0.0~2.0)
 	private double age;						// 年齢
 	private double childTime;				// 子供を作ってから経過した時間
+	private boolean isCollide;				// 衝突している
 
 	// 近接エンティティに関するリスト
 	private List<Entity> inSightPreys;		// 視界内捕食可能エンティティリスト
@@ -107,6 +108,7 @@ public class Animal extends Entity {
 		this.direction = Math.random() * Math.PI * 2;
 		this.walkPace = 1.0;
 		this.age = this.childTime = 0;
+		this.isCollide = false;
 	}
 
 	// 1フレーム毎に実行される描画メソッド
@@ -145,7 +147,11 @@ public class Animal extends Entity {
 	// 1フレーム毎に実行される更新メソッド
 	@Override
 	public void update() {
-		geneHead.perform(this);				// 行動ツリーの実行	
+		if(isCollide){
+			isCollide = false;
+		}else{
+			geneHead.perform(this);				// 行動ツリーの実行	
+		}
 	}
 	
 	// 衝突
@@ -153,10 +159,12 @@ public class Animal extends Entity {
 		if(world.getGeneManager().isFriend(this, entity)){
 			world.getGeneManager().crossEntities(this, (Animal)entity);
 			direction = Util.getRadian(entity.getX(), entity.getY(), x, y);
+			isCollide = true;
 		}else if(world.getGeneManager().isEdible(this, entity)){		// 捕食可能か？
 			eat(entity);
 		}else{
 			direction = Util.getRadian(entity.getX(), entity.getY(), x, y);
+			isCollide = true;
 		}
 	}
 	

@@ -22,9 +22,9 @@ public class GeneManager {
 	private int originNum = 4;				// 始祖動物の種類数
 	private int decentDepth = 3;			// 親エンティティを何代前まで遡って比較するか
 	
-	private double plantEaterPreyRank = 1.25;	// 食性による捕食可能ランクの補正
+	private double plantEaterPreyRank = 1.0;	// 食性による捕食可能ランクの補正
 	private double mixedEaterPreyRank = 1.0;
-	private double fleshEaterPreyRank = 0.75;
+	private double fleshEaterPreyRank = 1.0;
 	
 	private double plantEnergyMin = 100000;	// 植物のエネルギー
 	private double plantEnergyMax = 200000;
@@ -32,28 +32,28 @@ public class GeneManager {
 	// 遺伝子情報、ステータスの最小値，最大値、コスト
 	private float rgbMin = 0;					// 体色
 	private float rgbMax = 255;
-	private double plantEaterCost = 10;			// 草食のコスト
-	private double fleshEaterCost = 20;			// 肉食のコスト
-	private double mixedEaterCost = 30;			// 雑食のコスト
+	private double plantEaterCost = 30;			// 草食のコスト
+	private double fleshEaterCost = 10;			// 肉食のコスト
+	private double mixedEaterCost = 40;			// 雑食のコスト
 	private double EdibilityChangeRate = 0.05;	// 食性が変わる確率
 	private double preyRankCost = 100;			// 捕食可能ランクのコスト
 	private double fovMin = Math.PI/9.0;		// 視野角
 	private double fovMax = Math.PI*2;
-	private double fovCost = 5;
+	private double fovCost = 10;
 	private float sightMin = 10.0f;				// 視野
 	private float sightMax = 150.0f;
-	private float sightCost = 5;
+	private float sightCost = 20;
 	private double speedMin = 0.2;				// スピード
 	private double speedMax = 2.0;
 	private double speedCost = 10;
-	private double lifeSpanMin = 50000;			// 寿命の長さ
-	private double lifeSpanMax = 250000;
+	private double lifeSpanMin = 10000;			// 寿命の長さ
+	private double lifeSpanMax = 50000;
 	private double lifeSpanCost = 10;
-	private double childSpanMin = 180;			// 子供が作れるようになるまでの時間 (小さい方が高コスト)
-	private double childSpanMax = 360;
-	private double childSpanCost = 5;
+	private double childSpanMin = 360;			// 子供が作れるようになるまでの時間 (小さい方が高コスト)
+	private double childSpanMax = 720;
+	private double childSpanCost = 10;
 	private float sizeMin = 5.0f;				// 大きさ
-	private float sizeMax = 20.0f;
+	private float sizeMax = 30.0f;
 	private double walkPaceMin = 0.0;			// 歩く速さ
 	private double walkPaceMax = 2.0;
 	private int MutationMin = 1;				// 突然変異が起きる箇所の数
@@ -182,7 +182,18 @@ public class GeneManager {
 		e2.reduceEnergy(energy/2);
 		
 		// ビルダーの生成
-		Animal.Builder b = new Animal.Builder(world, (e1.getX()+e2.getX())/2f, (e1.getY()+e2.getY())/2f, energy);
+		float spawnX = (float)(sizeMax-Math.random()*sizeMax*2+(e1.getX()+e2.getX())/2.0), spawnY = (float)(sizeMax-Math.random()*sizeMax*2+(e1.getY()+e2.getY())/2.0);
+		if(spawnX < 0){
+			spawnX = -spawnX + sizeMax;
+		}else if(world.getWidth() < spawnX){
+			spawnX = world.getWidth()*2 - spawnX - sizeMax;
+		}
+		if(spawnY < 0){
+			spawnY = -spawnY + sizeMax;
+		}else if(world.getHeight() < spawnY){
+			spawnY = world.getHeight()*2 - spawnY - sizeMax;
+		}
+		Animal.Builder b = new Animal.Builder(world, spawnX, spawnY, energy);
 		
 		// ツリーの交叉
 		GeneNode geneTree = crossTree(e1.getGeneHead(), e2.getGeneHead());
@@ -412,6 +423,7 @@ public class GeneManager {
 	}
 
 	// ゲッタ
+	public World getWorld() { return world; }
 	public double getPlantEaterPreyRank() { return plantEaterPreyRank; }
 	public double getFleshEaterPreyRank() { return fleshEaterPreyRank; }
 	public double getMixedEaterPreyRank() { return mixedEaterPreyRank; }

@@ -43,7 +43,7 @@ public class World extends Thread{
 		geneManager = new GeneManager(this);
 		
 		entities = new ArrayList<Entity>();
-		energy = 100000000;
+		energy = 1000000000;
 		randomCreateEntity(energy);
 		display.setEntityList(new ArrayList<Entity>(entities));
 		
@@ -73,8 +73,9 @@ public class World extends Thread{
 				plantSpend = 0;
 			}
 			energy -= plantSpend + animalspend;
-			addEntity(new Plant(this, (float)(Math.random()*width), (float)(Math.random()*height), plantSpend));
-			addEntity(new Animal.Builder(this, (float)(Math.random()*width), (float)(Math.random()*height), animalspend).random().build());
+			float sizeMax = geneManager.getSizeMax();
+			addEntity(new Plant(this, (float)(sizeMax+Math.random()*(width-sizeMax*2)), (float)(sizeMax+Math.random()*(height-sizeMax*2)), plantSpend));
+			addEntity(new Animal.Builder(this, (float)(sizeMax+Math.random()*(width-sizeMax*2)), (float)(sizeMax+Math.random()*(height-sizeMax*2)), animalspend).random().build());
 		}
 	}
 	
@@ -106,7 +107,7 @@ public class World extends Thread{
 		animal.reduceEnergy(moveCost);
 		this.energy += moveCost;
 		
-		// 300分の1の確率でplantを追加する
+		// 1000分の1の確率でplantを追加する
 		if((int)(Math.random()*1000/gameSpeed) == 0){
 			double energyMin = geneManager.getPlantEnergyMin(), energyMax = geneManager.getPlantEnergyMax();
 			double spend = energyMin + Math.random()*(energyMax-energyMin);
@@ -122,17 +123,18 @@ public class World extends Thread{
 	
 	// animalの周りにplantを出現させる
 	private void popPlantAroundAnimal(Animal animal, double spend){
-		float spawnX = (float)(animal.getX()+(200-Math.random()*400));
-		float spawnY = (float)(animal.getY()+(200-Math.random()*400));
+		float spawnX = (float)(animal.getX()+(500-Math.random()*1000));
+		float spawnY = (float)(animal.getY()+(500-Math.random()*1000));
+		float sizeMax = geneManager.getSizeMax();
 		if(spawnX < 0){
-			spawnX = -spawnX;
+			spawnX = -spawnX + sizeMax;
 		}else if(width < spawnX){
-			spawnX = width*2 - spawnX;
+			spawnX = width*2 - spawnX - sizeMax;
 		}
 		if(spawnY < 0){
-			spawnY = -spawnY;
+			spawnY = -spawnY + sizeMax;
 		}else if(height < spawnY){
-			spawnY = height*2 - spawnY;
+			spawnY = height*2 - spawnY - sizeMax;
 		}
 		addEntity(new Plant(this, spawnX, spawnY, spend));
 	}
@@ -262,7 +264,7 @@ public class World extends Thread{
 	
 	// ゲームスピードへの加算
 	public void addGameSpeed(double d){
-		gameSpeed = gameSpeed+d < 0 ? 0 : gameSpeed+d;
+		gameSpeed = gameSpeed+d < 0.1 ? 0.1 : 3.0 < gameSpeed+d ? 3.0 : gameSpeed+d;
 	}
 	
 	// FPS制限への加算
