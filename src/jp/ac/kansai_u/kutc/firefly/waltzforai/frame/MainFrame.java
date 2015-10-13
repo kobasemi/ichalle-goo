@@ -35,7 +35,7 @@ public class MainFrame extends JFrame{
 		firstF.setSize(getWidth(), getHeight());
 		SecondFrame secondF = new SecondFrame(getWidth(), getHeight());  	// visibleを決めるためインスタンス化する
 		// FstFrameに貼るボタンの設定
-		ImageIcon icon = new ImageIcon("btn.png");
+		ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource("btn.png"));
 	    JButton btn = new JButton(icon);
 	    JLabel l = new JLabel("Start");
 	    l.setFont(new Font("Century", Font.ITALIC, 30));
@@ -63,7 +63,7 @@ public class MainFrame extends JFrame{
 	    titleL.setBounds(getWidth()/2-300, getHeight()/2-100, getWidth()+300, 200);
 	    // FstFrameに背景画像をラベルで載せる
 	    JLabel lblimg = new JLabel();
-		lblimg.setIcon(new ImageIcon("bgi.jpg"));
+		lblimg.setIcon(new ImageIcon(getClass().getClassLoader().getResource("bgi.jpg")));
 		lblimg.setBounds(0, 0, getWidth(), getHeight());
 		// FstFrameに上に貼りたい物から順にadd
 		firstF.add(titleL);

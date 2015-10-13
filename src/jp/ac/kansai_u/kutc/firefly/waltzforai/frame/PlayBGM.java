@@ -1,6 +1,5 @@
 package jp.ac.kansai_u.kutc.firefly.waltzforai.frame;
 
-import java.io.File;
 import java.io.IOException;
 
 import javax.sound.sampled.AudioInputStream;
@@ -14,11 +13,10 @@ public class PlayBGM {
     public void start(String file) {
         AudioInputStream ais = null;
 		try {
-			ais = AudioSystem.getAudioInputStream(new File(file+".wav"));
-			ais.getFormat();
+			ais = AudioSystem.getAudioInputStream(getClass().getClassLoader().getResource(file + ".wav"));
             line = AudioSystem.getClip();
             line.open(ais);
-            line.start();
+            line.loop(Clip.LOOP_CONTINUOUSLY);
 		} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
 			e.printStackTrace();
 		}
@@ -26,6 +24,6 @@ public class PlayBGM {
 
 	public void stop(){
         line.stop();
-        line.close();
+        line.setFramePosition(0);
 	}
 }
