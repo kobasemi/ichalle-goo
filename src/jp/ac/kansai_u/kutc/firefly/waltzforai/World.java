@@ -43,7 +43,7 @@ public class World extends Thread{
 		geneManager = new GeneManager(this);
 		
 		entities = new ArrayList<Entity>();
-		energy = 1000000000;
+		energy = 800000000;
 		randomCreateEntity(energy);
 		display.setEntityList(new ArrayList<Entity>(entities));
 		
@@ -67,7 +67,7 @@ public class World extends Thread{
 		double plantSpend, animalspend;
 		while(energy > 0.01){
 			plantSpend = energyMin + Math.random()*(energyMax-energyMin);
-			animalspend = 1000000 + Math.random()*1000000;
+			animalspend = 500000 + Math.random()*500000;
 			if(energy < plantSpend + animalspend){
 				animalspend = energy;
 				plantSpend = 0;
@@ -119,6 +119,11 @@ public class World extends Thread{
 			}
 			popPlantAroundAnimal(animal, spend);
 		}
+	}
+	
+	// エネルギーをワールドに戻す
+	public void returnEnergy(double energy){
+		this.energy += energy;
 	}
 	
 	// animalの周りにplantを出現させる

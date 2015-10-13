@@ -45,6 +45,7 @@ public class IfNode extends GeneNode {
 		case friendInSight: result = friendInSight(animal); break;
 		case randomBranch: result = randomBranch(animal); break;
 		case canMakeChild: result = canMakeChild(animal); break;
+		case walkPaceBranch: result = walkPaceBranch(animal); break;
 		}
 		
 		// 結果に基づいて次のアクションを呼び出す
@@ -109,16 +110,25 @@ public class IfNode extends GeneNode {
 		}
 	}
 	
-	//子どもが作れるか
+	// 子どもが作れるか
 	private boolean canMakeChild(Animal animal){
 		return animal.canMakeChild();
+	}
+	
+	// 歩く速さで分岐
+	private boolean walkPaceBranch(Animal animal){
+		if(animal.getWalkPace() < gm.getWalkPaceMin() + value*(gm.getWalkPaceMax()-gm.getWalkPaceMin())){
+			return true;
+		}else{
+			return false;
+		}
 	}
 }
 
 enum Condition{
 	// ここに条件分岐メソッド名を追加する
 	// メソッドを追加したらここも書き加えてください
-	preyInSight, enemyInSight, friendInSight, randomBranch, canMakeChild;
+	preyInSight, enemyInSight, friendInSight, randomBranch, canMakeChild, walkPaceBranch;
 	
 	// 以下はランダム選択用
 	private static final List<Condition> VALUES = Collections.unmodifiableList(Arrays.asList(values()));

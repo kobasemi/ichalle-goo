@@ -19,6 +19,7 @@ public class Animal extends Entity {
 	private GeneNode geneHead;				// 行動を表すツリーのヘッド
 	private Edibility edibility;			// 食性 (捕食可能なもの)
 	private double preyRank;				// 捕食ランク
+	private double energyLimit;				// エネルギーの上限
 	private float sight;					// 視野の広さ (半径)
 	private double fov;						// 視野角 (ラジアン)
 	private double speed;					// 足の速さ
@@ -57,6 +58,7 @@ public class Animal extends Entity {
 		private double cost;
 		private double lifeSpan;
 		private double childSpan;
+		private double energyLimit;
 
 		public Builder(World world, float x, float y, double energy){
 			this.world = world;
@@ -86,6 +88,7 @@ public class Animal extends Entity {
 		public void setLifeSpan(double lifeSpan) {	this.lifeSpan = lifeSpan; }
 		public void setChildSpan(double childSpan) { this.childSpan = childSpan; }
 		public void setSize(float size) { this.size = size; }
+		public void setEnergyLimit(double energyLimit) { this.energyLimit = energyLimit; }
 	}
 
 	public Animal(Builder b) {
@@ -94,6 +97,7 @@ public class Animal extends Entity {
 		this.geneHead = b.geneHead;
 		this.edibility = b.edibility;
 		this.preyRank = b.preyRank;
+		this.energyLimit = b.energyLimit;
 		this.size = b.size;
 		this.sight = b.sight;
 		this.fov = b.fov;
@@ -306,6 +310,9 @@ public class Animal extends Entity {
 	// 捕食
 	protected void eat(Entity entity){
 		double energy = entity.getEnergy();
+		if(energyLimit < this.energy + energy){
+			energy = energyLimit - this.energy;
+		}
 		entity.reduceEnergy(energy);
 		this.energy += energy;
 	}
@@ -364,6 +371,7 @@ public class Animal extends Entity {
 	public List<HashSet<Animal>> getParents(){ return parents; }
 	public GeneNode getGeneHead(){ return geneHead; }
 	public Edibility getEdibility() { return edibility; }
+	public double getEnergyLimit() { return energyLimit; }
 	public float getSight(){ return sight; }
 	public double getFov(){ return fov; }
 	public double getDirection() { return direction; }

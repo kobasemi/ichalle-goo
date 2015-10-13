@@ -22,8 +22,8 @@ public class GeneManager {
 	private int originNum = 4;				// 始祖動物の種類数
 	private int decentDepth = 3;			// 親エンティティを何代前まで遡って比較するか
 	
-	private double plantEaterPreyRank = 1.0;	// 食性による捕食可能ランクの補正
-	private double mixedEaterPreyRank = 1.0;
+	private double plantEaterPreyRank = 0.85;	// 食性による捕食可能ランクの補正
+	private double mixedEaterPreyRank = 0.7;
 	private double fleshEaterPreyRank = 1.0;
 	
 	private double plantEnergyMin = 100000;	// 植物のエネルギー
@@ -34,9 +34,12 @@ public class GeneManager {
 	private float rgbMax = 255;
 	private double plantEaterCost = 30;			// 草食のコスト
 	private double fleshEaterCost = 10;			// 肉食のコスト
-	private double mixedEaterCost = 40;			// 雑食のコスト
+	private double mixedEaterCost = 80;			// 雑食のコスト
 	private double EdibilityChangeRate = 0.05;	// 食性が変わる確率
 	private double preyRankCost = 100;			// 捕食可能ランクのコスト
+	private double energyMin = 1000000;			// エネルギーの制限
+	private double energyMax = 2500000;
+	private double energyCost = 10;
 	private double fovMin = Math.PI/9.0;		// 視野角
 	private double fovMax = Math.PI*2;
 	private double fovCost = 10;
@@ -131,6 +134,10 @@ public class GeneManager {
 		double preyRank = Math.random();
 		cost += preyRank*preyRankCost;
 		
+		double energyLimitVal = Math.random();
+		double energyLimit = energyMin + energyLimitVal*(energyMax-energyMin);
+		cost += energyLimitVal*energyCost;
+		
 		double fovVal = Math.random();
 		double fov = fovMin + fovVal*(fovMax-fovMin);
 		cost += fovVal*fovCost;
@@ -159,6 +166,7 @@ public class GeneManager {
 		b.setEdibility(edibility);
 		b.setColor(clr, clg, clb);
 		b.setPreyRank(preyRank);
+		b.setEnergyLimit(energyLimit);
 		b.setSize(size);
 		b.setFov(fov);
 		b.setSight(sight);
@@ -182,16 +190,17 @@ public class GeneManager {
 		e2.reduceEnergy(energy/2);
 		
 		// ビルダーの生成
-		float spawnX = (float)(sizeMax-Math.random()*sizeMax*2+(e1.getX()+e2.getX())/2.0), spawnY = (float)(sizeMax-Math.random()*sizeMax*2+(e1.getY()+e2.getY())/2.0);
+		double r = sizeMax*2 + Math.random()*sizeMax, radian = Math.random()*Math.PI*2;
+		float spawnX = (float)(r*Math.cos(radian)+(e1.getX()+e2.getX())/2.0), spawnY = (float)(r*Math.sin(radian)+(e1.getY()+e2.getY())/2.0);
 		if(spawnX < 0){
-			spawnX = -spawnX + sizeMax;
+			spawnX = world.getWidth() + spawnX - sizeMax;
 		}else if(world.getWidth() < spawnX){
-			spawnX = world.getWidth()*2 - spawnX - sizeMax;
+			spawnX = spawnX - world.getWidth() + sizeMax;
 		}
 		if(spawnY < 0){
-			spawnY = -spawnY + sizeMax;
+			spawnY = world.getHeight() + spawnY - sizeMax;
 		}else if(world.getHeight() < spawnY){
-			spawnY = world.getHeight()*2 - spawnY - sizeMax;
+			spawnX = spawnY - world.getHeight() + sizeMax;
 		}
 		Animal.Builder b = new Animal.Builder(world, spawnX, spawnY, energy);
 		
@@ -241,6 +250,11 @@ public class GeneManager {
 		double preyRankVal = getStateRatio(preyRank, 1.0, 0.0);
 		cost += preyRankVal*preyRankCost;
 		
+		double energyLimit = (e1.getEnergyLimit() + e2.getEnergyLimit()) / 2.0;
+		energyLimit = mutateState(energyLimit, energyMax, energyMin);
+		double energyLimitVal = getStateRatio(energyLimit, energyMax, energyMin);
+		cost += energyLimitVal*energyCost;
+		
 		double fov = (e1.getFov() + e2.getFov()) / 2.0;
 		fov = mutateState(fov, fovMax, fovMin);
 		double fovVal = getStateRatio(fov, fovMax, fovMin);
@@ -274,7 +288,8 @@ public class GeneManager {
 		b.setGeneHead(geneTree);
 		b.setEdibility(edibility);
 		b.setColor(clr, clg, clb);
-		b.setPreyRank(preyRankVal);
+		b.setPreyRank(preyRank);
+		b.setEnergyLimit(energyLimit);
 		b.setSize(size);
 		b.setFov(fov);
 		b.setSight(sight);

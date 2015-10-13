@@ -134,28 +134,28 @@ public class SecondFrame extends JFrame{
 		infoLabel.setBackground(new Color(1, 1, 1, 0));
 		*/
 		// 情報ラベル（BGM）
-		bgmLabel = new JLabel("　BGM ： natural");
+		bgmLabel = new JLabel("　Dominance ： natural");
 		bgmLabel.setFont(new Font("Century", Font.PLAIN, 30));
 		bgmLabel.setForeground(new Color(255, 255, 240));
 		bgmLabel.setBackground(new Color(1, 1, 1, 0));
 		// 情報ラベル（個体数)
-		numLabel = new JLabel("<html>　Number of individuals<br><html>");
+		numLabel = new JLabel("<html>　Population<br><html>");
 		numLabel.setFont(new Font("Century", Font.PLAIN, 30));
 		numLabel.setForeground(new Color(255, 255, 240));
 		// 情報ラベル（個体数　草)
-		plantLabel = new JLabel("　・plant : " + plant);
+		plantLabel = new JLabel("　・Plant : " + plant);
 		plantLabel.setFont(new Font("Century", Font.PLAIN, 24));
 		plantLabel.setForeground(new Color(255, 255, 240));
 		// 情報ラベル（草食）
-		plantEatLabel = new JLabel("　・plant-eater : " + plantE);
+		plantEatLabel = new JLabel("　・Plant-eater : " + plantE);
 		plantEatLabel.setFont(new Font("Century", Font.PLAIN, 24));
 		plantEatLabel.setForeground(new Color(255, 255, 240));
 		// 情報ラベル（肉食）
-		fleshEatLabel = new JLabel("　・flesh-eater : " + fleshE);
+		fleshEatLabel = new JLabel("　・Flesh-eater : " + fleshE);
 		fleshEatLabel.setFont(new Font("Century", Font.PLAIN, 24));
 		fleshEatLabel.setForeground(new Color(255, 255, 240));
 		// 情報ラベル（雑食食）
-		omniLabel = new JLabel("　・omnivorous : " + omni);
+		omniLabel = new JLabel("　・Omnivorous : " + omni);
 		omniLabel.setFont(new Font("Century", Font.PLAIN, 24));
 		omniLabel.setForeground(new Color(255, 255, 240));
 		// パネルにラベルを登録していく
@@ -217,17 +217,15 @@ public class SecondFrame extends JFrame{
 	// 再描画メソッド
 	public void resetChart() {
 		// 情報ラベル（BGM）
-		bgmLabel.setText("　BGM ： " + increaseRate.getAdvantage());
-		// 情報ラベル（個体数)
-		numLabel.setText("<html>　Number of individuals<br><html>");
+		bgmLabel.setText("　Dominance ： " + increaseRate.getAdvantage());
 		// 情報ラベル（個体数　草)
-		plantLabel.setText("　・plant : " + plant);
+		plantLabel.setText("　・Plant : " + plant);
 		// 情報ラベル（草食）
-		plantEatLabel.setText("　・plant-eater : " + plantE);
+		plantEatLabel.setText("　・Plant-eater : " + plantE);
 		// 情報ラベル（草食）
-		fleshEatLabel.setText("　・flesh-eater : " + fleshE);
+		fleshEatLabel.setText("　・Flesh-eater : " + fleshE);
 		// 情報ラベル（雑食食）
-		omniLabel.setText("　・omnivorous : " + omni);
+		omniLabel.setText("　・Omnivorous : " + omni);
 		
 		// グラフの更新
 		oresenP.setChart(oresendraw());	// 折れ線グラフ描画
@@ -252,7 +250,7 @@ public class SecondFrame extends JFrame{
 			data2.addValue(omniList.get(i), speciesName[3], time.get(i));
 		}
 		JFreeChart oresen = ChartFactory.createLineChart(
-				"The Transition of Individuals", "time(sec)", "Number", data2,
+				"Population Transition", "time(sec)", "Number", data2,
 				PlotOrientation.VERTICAL, true, false, false);
 		TextTitle oresenTitle = oresen.getTitle();
 		oresenTitle.setPaint(new Color(255, 255, 240));
@@ -291,7 +289,7 @@ public class SecondFrame extends JFrame{
 		data.setValue("fleshEater", fleshE);
 		data.setValue("omnivorous", omni);
 		JFreeChart chart = ChartFactory.createRingChart(
-				"The proportion of individuals", data, true, true, false);
+				"Population Ratio", data, true, true, false);
 		TextTitle pieTitle = chart.getTitle();
 		pieTitle.setPaint(new Color(255, 255, 240));
 		RingPlot chart_plot = (RingPlot) chart.getPlot();
@@ -319,7 +317,7 @@ public class SecondFrame extends JFrame{
 		boudata.addValue(plantE, "PlantEater", "");
 		boudata.addValue(fleshE, "FleshEater", "");
 		boudata.addValue(omni, "omnivorous", "");
-		JFreeChart bouchart = ChartFactory.createBarChart("The number of Individuals", "species", "num",
+		JFreeChart bouchart = ChartFactory.createBarChart("Population Chart", "species", "num",
 				boudata, PlotOrientation.HORIZONTAL, true, false, false);
 		TextTitle bouTitle = bouchart.getTitle();
 		bouTitle.setPaint(new Color(255, 255, 240));

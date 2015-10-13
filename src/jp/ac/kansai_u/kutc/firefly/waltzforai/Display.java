@@ -24,7 +24,7 @@ public class Display extends PApplet{
 	private List<Button> buttons;	// ボタン
 	
 	public Display(){
-		world = new World(this, 8000, 6000);
+		world = new World(this, 10000, 10000);
 		
 		basePos = new PVector();
 		dragPos = new PVector();
